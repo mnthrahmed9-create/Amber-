@@ -71,7 +71,7 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   animation:progressFill 2.4s cubic-bezier(.6,.05,.3,.95) forwards;transform-origin:right;transform:scaleX(0);}
 @keyframes progressFill{to{transform:scaleX(1)}}
 
-/* ============ AUTH ============ */
+/* ============ AUTH (NEW) ============ */
 #authScreen{
   position:fixed;inset:0;z-index:500;overflow-y:auto;
   background:radial-gradient(circle at 50% 15%, rgba(0,224,164,0.18) 0%, transparent 50%),
@@ -341,7 +341,7 @@ select.field option{background:#0c0b10;color:#fff}
   display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;
   box-shadow:0 8px 24px -8px rgba(0,224,164,0.6)}
 .user-name-big{font-size:20px;font-weight:900;color:#fff}
-.user-phone-big{font-size:12px;color:#a09a8a;margin-top:4px;word-break:break-all}
+.user-phone-big{font-size:12px;color:#a09a8a;margin-top:4px}
 .user-info-row{display:flex;justify-content:space-between;align-items:center;
   padding:10px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.05)}
 .user-info-row:last-child{border-bottom:0}
@@ -464,8 +464,10 @@ select.field option{background:#0c0b10;color:#fff}
     <!-- LOGIN -->
     <div id="authLogin" class="auth-panel">
       <div class="formbox">
-        <label>البريد الإلكتروني</label>
-        <input class="field" id="loginEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com">
+        <label>رقم الهاتف</label>
+        <input class="field" id="loginPhone" type="tel" inputmode="tel" placeholder="07XXXXXXXXX">
+        <label>كلمة المرور</label>
+        <input class="field" id="loginPwd" type="password" placeholder="••••••••">
         <div class="auth-err" id="loginErr"></div>
         <button class="cta-primary" style="margin-top:8px" onclick="doLogin()">🔓 دخول</button>
       </div>
@@ -477,12 +479,16 @@ select.field option{background:#0c0b10;color:#fff}
       <div class="formbox">
         <label>الاسم الكامل *</label>
         <input class="field" id="signupName" placeholder="مثلاً: أبو أحمد">
-        <label>البريد الإلكتروني *</label>
-        <input class="field" id="signupEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com">
+        <label>رقم الهاتف *</label>
+        <input class="field" id="signupPhone" type="tel" inputmode="tel" placeholder="07XXXXXXXXX">
+        <label>كلمة المرور *</label>
+        <input class="field" id="signupPwd" type="password" placeholder="6 أحرف على الأقل">
+        <label>تأكيد كلمة المرور *</label>
+        <input class="field" id="signupPwd2" type="password" placeholder="••••••••">
         <div class="auth-err" id="signupErr"></div>
         <button class="cta-primary" style="margin-top:8px" onclick="doSignup()">✨ إنشاء الحساب</button>
       </div>
-      <div class="auth-hint">🔒 بياناتك محفوظة على جهازك فقط — الدخول بالبريد فقط</div>
+      <div class="auth-hint">🔒 بياناتك محفوظة على جهازك فقط</div>
     </div>
   </div>
 </div>
@@ -689,7 +695,14 @@ applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
 const AUTH_USERS_KEY = 'ampere_users';
 const AUTH_SESSION_KEY = 'ampere_session';
 
-function isValidEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
+function hashPassword(pwd){
+  let h = 0;
+  for (let i = 0; i < pwd.length; i++){
+    h = ((h << 5) - h) + pwd.charCodeAt(i);
+    h |= 0;
+  }
+  return 'h' + Math.abs(h).toString(36) + '_' + pwd.length;
+}
 
 function getUsers(){
   try { return JSON.parse(localStorage.getItem(AUTH_USERS_KEY) || '[]'); }
@@ -752,23 +765,28 @@ function switchAuth(tab){
 
 function doSignup(){
   const name = ($('signupName').value || '').trim();
-  const email = ($('signupEmail').value || '').trim().toLowerCase();
+  const phone = ($('signupPhone').value || '').trim();
+  const pwd = $('signupPwd').value || '';
+  const pwd2 = $('signupPwd2').value || '';
   const err = $('signupErr');
 
   if (!name){ err.textContent = '⚠️ الاسم مطلوب'; return; }
-  if (!email){ err.textContent = '⚠️ البريد الإلكتروني مطلوب'; return; }
-  if (!isValidEmail(email)){ err.textContent = '⚠️ البريد الإلكتروني غير صالح'; return; }
+  if (phone.length < 7){ err.textContent = '⚠️ رقم الهاتف غير صالح'; return; }
+  if (!/^[0-9+\-\s]+$/.test(phone)){ err.textContent = '⚠️ رقم الهاتف يحتوي رموزاً غير صحيحة'; return; }
+  if (pwd.length < 6){ err.textContent = '⚠️ كلمة المرور 6 أحرف على الأقل'; return; }
+  if (pwd !== pwd2){ err.textContent = '⚠️ كلمتا المرور غير متطابقتين'; return; }
 
   const users = getUsers();
-  if (users.some(u => (u.email || '').toLowerCase() === email)){
-    err.textContent = '⚠️ هذا البريد مسجل مسبقاً — جرّب الدخول';
+  if (users.some(u => u.phone === phone)){
+    err.textContent = '⚠️ هذا الرقم مسجل مسبقاً — جرّب الدخول';
     return;
   }
 
   const newUser = {
     id: uid(),
     name,
-    email,
+    phone,
+    passwordHash: hashPassword(pwd),
     createdAt: now()
   };
   users.push(newUser);
@@ -781,36 +799,35 @@ function doSignup(){
   toast('🎉 مرحباً ' + name + ' — تم إنشاء حسابك', 'success');
 
   $('signupName').value = '';
-  $('signupEmail').value = '';
+  $('signupPhone').value = '';
+  $('signupPwd').value = '';
+  $('signupPwd2').value = '';
   err.textContent = '';
 
   enterApp();
 }
 
 function doLogin(){
-  const input = ($('loginEmail').value || '').trim();
+  const phone = ($('loginPhone').value || '').trim();
+  const pwd = $('loginPwd').value || '';
   const err = $('loginErr');
 
-  if (!input){ err.textContent = '⚠️ أدخل البريد الإلكتروني'; return; }
+  if (!phone){ err.textContent = '⚠️ أدخل رقم الهاتف'; return; }
+  if (!pwd){ err.textContent = '⚠️ أدخل كلمة المرور'; return; }
 
-  const users = getUsers();
-  let user = null;
-
-  if (input.includes('@')){
-    const email = input.toLowerCase();
-    if (!isValidEmail(email)){ err.textContent = '⚠️ البريد الإلكتروني غير صالح'; return; }
-    user = users.find(u => (u.email || '').toLowerCase() === email);
-  } else {
-    user = users.find(u => u.phone === input);
+  const user = getUsers().find(u => u.phone === phone);
+  if (!user){ err.textContent = '⚠️ لا يوجد حساب بهذا الرقم'; return; }
+  if (user.passwordHash !== hashPassword(pwd)){
+    err.textContent = '⚠️ كلمة المرور غير صحيحة';
+    return;
   }
-
-  if (!user){ err.textContent = '⚠️ لا يوجد حساب بهذا البريد'; return; }
 
   setSession(user.id);
   haptic();
   toast('👋 أهلاً بعودتك ' + user.name, 'success');
 
-  $('loginEmail').value = '';
+  $('loginPhone').value = '';
+  $('loginPwd').value = '';
   err.textContent = '';
 
   enterApp();
@@ -853,13 +870,11 @@ function openUserMenu(){
     revenue += Number(s.amps) * price;
   });
 
-  const contactLine = u.email ? '📧 ' + esc(u.email) : (u.phone ? '📞 ' + esc(u.phone) : '');
-
   openModal('👤 حسابي', `
     <div style="text-align:center;padding:6px 0 16px">
       <div class="user-avatar-big">${esc((u.name || '?').charAt(0))}</div>
       <div class="user-name-big">${esc(u.name)}</div>
-      <div class="user-phone-big">${contactLine}</div>
+      <div class="user-phone-big">📞 ${esc(u.phone)}</div>
     </div>
 
     <div style="padding:6px 14px;background:rgba(0,224,164,0.06);border:1px solid rgba(0,224,164,0.2);border-radius:14px">
