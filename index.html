@@ -71,39 +71,47 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   animation:progressFill 2.4s cubic-bezier(.6,.05,.3,.95) forwards;transform-origin:right;transform:scaleX(0);}
 @keyframes progressFill{to{transform:scaleX(1)}}
 
-/* ============ AUTH (NEW) ============ */
-#authScreen{
-  position:fixed;inset:0;z-index:500;overflow-y:auto;
-  background:radial-gradient(circle at 50% 15%, rgba(0,224,164,0.18) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, #0a1410 0%, #050507 80%);
-  display:flex;align-items:center;justify-content:center;
-  padding:24px 20px;
-  animation:authIn .5s ease;
+/* ============ LOGIN ============ */
+#loginScreen{
+  position:fixed;inset:0;z-index:9000;
+  background:radial-gradient(circle at 50% 30%, rgba(0,224,164,0.18) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, #0a1410 0%, #050507 70%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px;overflow-y:auto;
+  animation:fadeIn .5s;
 }
-@keyframes authIn{from{opacity:0}to{opacity:1}}
-.auth-theme{position:fixed;top:16px;right:16px;z-index:10}
-.auth-wrap{width:100%;max-width:400px;text-align:center;padding:10px 0}
-.auth-logo{font-size:64px;line-height:1;margin-bottom:4px;
+#loginScreen.login-out{opacity:0;transition:opacity .4s;pointer-events:none}
+.login-orb{position:absolute;top:18%;width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,224,164,0.18) 0%,transparent 65%);
+  filter:blur(40px);animation:orbPulse 3s ease-in-out infinite;pointer-events:none}
+.login-theme-btn{position:absolute;top:18px;left:18px;z-index:10;
+  width:42px;height:42px;border-radius:13px;
+  background:linear-gradient(160deg,#1a1820,#0c0b10);
+  border:1px solid rgba(255,255,255,0.10);font-size:20px;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .2s;}
+.login-theme-btn:active{transform:scale(.92) rotate(20deg)}
+.login-container{position:relative;z-index:2;width:100%;max-width:420px;
+  animation:fadeInUp .6s ease}
+.login-bolt{font-size:64px;text-align:center;margin-bottom:8px;
   filter:drop-shadow(0 0 30px rgba(0,224,164,0.7));
-  animation:boltFloat 2.5s ease-in-out infinite;display:inline-block}
-.auth-brand{font-size:44px;font-weight:900;letter-spacing:4px;margin:2px 0 4px;
+  animation:boltFloat 2.5s ease-in-out infinite}
+.login-logo{font-size:42px;font-weight:900;letter-spacing:4px;text-align:center;
   background:linear-gradient(90deg,#006644,#00e0a4,#b8fff0,#00e0a4,#006644);background-size:220% 100%;
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  animation:shimmer 3s linear infinite;}
-.auth-tagline{font-size:13px;color:#00e0a4;font-weight:800;letter-spacing:2px;margin-bottom:26px}
-.auth-tabs{display:flex;gap:6px;background:#0c0b10;border:1px solid rgba(255,255,255,0.08);
-  border-radius:16px;padding:4px;margin-bottom:16px;}
-.auth-tab{flex:1;padding:12px;border-radius:12px;color:#a09a8a;font-size:13px;font-weight:900;transition:all .2s}
-.auth-tab.active{background:linear-gradient(180deg,rgba(0,224,164,0.2),rgba(0,224,164,0.05));color:var(--primary)}
-.auth-err{min-height:20px;font-size:12px;color:#ff4d6d;font-weight:800;text-align:center;margin-top:8px}
-.auth-hint{font-size:11px;color:#6a6659;text-align:center;margin-top:14px;line-height:1.6}
-.auth-panel{animation:panelIn .3s ease}
-@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-[data-theme="light"] #authScreen{background:radial-gradient(circle at 50% 15%, rgba(0,224,164,0.22) 0%, transparent 50%),radial-gradient(circle at 50% 50%, #e6f2ec 0%, #f0f5f2 80%)}
-[data-theme="light"] .auth-tabs{background:#e6f2ec;border-color:rgba(0,0,0,0.08)}
-[data-theme="light"] .auth-tab{color:#4a6055}
-[data-theme="light"] .auth-tab.active{background:linear-gradient(180deg,rgba(0,224,164,0.3),rgba(0,224,164,0.1));color:#006644}
-[data-theme="light"] .auth-hint{color:#4a6055}
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+  animation:shimmer 3s linear infinite;line-height:1}
+.login-sub{font-size:13px;letter-spacing:2px;color:#00e0a4;font-weight:700;
+  text-align:center;margin-top:6px;margin-bottom:26px}
+.login-card{background:linear-gradient(160deg,#14121a 0%,#0a090f 100%);
+  border:1px solid rgba(0,224,164,0.25);border-radius:24px;padding:24px 20px;
+  box-shadow:0 20px 60px -20px rgba(0,224,164,0.3),0 0 0 1px rgba(0,224,164,0.05);}
+.login-title{font-size:20px;font-weight:900;color:#fff;margin-bottom:4px}
+.login-desc{font-size:12.5px;color:#a09a8a;margin-bottom:18px;line-height:1.6}
+.login-card label{margin-top:0}
+.login-error{font-size:12px;color:#ff4d6d;margin-top:10px;padding:10px 14px;
+  background:rgba(255,77,109,0.1);border:1px solid rgba(255,77,109,0.3);
+  border-radius:10px;text-align:center;animation:fadeInUp .3s}
+.login-tag{text-align:center;font-size:11px;color:#6a6659;margin-top:20px;letter-spacing:1px}
 
 /* ============ APP ============ */
 #app{max-width:520px;min-height:100vh;margin:0 auto;position:relative;
@@ -125,10 +133,6 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   display:flex;align-items:center;justify-content:center;
   transition:transform .2s,background .3s,border-color .3s;}
 .theme-btn:active{transform:scale(.92) rotate(20deg)}
-.user-btn{background:linear-gradient(160deg,#00e0a4,#006644)!important;color:#042018!important;
-  font-weight:900!important;font-size:16px!important;border:1px solid rgba(0,224,164,0.5)!important;
-  font-family:inherit}
-.user-btn:active{transform:scale(.92)!important}
 
 .screen{display:none;padding:16px 16px 100px;animation:screenIn .35s}
 .screen.active{display:block}
@@ -167,8 +171,6 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   transition:transform .1s;}
 .cta-ghost:active{transform:scale(.97)}
 .cta-danger{background:rgba(255,77,109,0.12);color:#ff4d6d;border:1px solid rgba(255,77,109,0.3)}
-.cta-danger-solid{background:linear-gradient(180deg,#ff8da1,#ff4d6d 50%,#d63350);color:#fff;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 6px 0 #8a0030,0 16px 30px -10px rgba(255,77,109,0.5)}
 
 .field{width:100%;padding:14px 16px;margin-top:8px;
   background:#0c0b10;border:1px solid rgba(255,255,255,0.09);
@@ -314,7 +316,7 @@ label:first-child{margin-top:0}
   border:1px solid rgba(0,224,164,0.4);color:#fff;font-size:13px;font-weight:700;
   padding:12px 20px;border-radius:14px;
   box-shadow:0 20px 40px -10px rgba(0,0,0,0.9);
-  z-index:99999;opacity:0;pointer-events:none;
+  z-index:9999;opacity:0;pointer-events:none;
   transition:opacity .3s,transform .3s;max-width:88vw;text-align:center;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.success{border-color:rgba(0,224,164,0.6)}
@@ -334,18 +336,6 @@ select.field option{background:#0c0b10;color:#fff}
 
 /* Divider */
 .divider{height:1px;background:rgba(255,255,255,0.06);margin:14px 0}
-
-/* User avatar big */
-.user-avatar-big{width:80px;height:80px;margin:0 auto 12px;border-radius:50%;
-  background:linear-gradient(160deg,#00e0a4,#006644);color:#042018;
-  display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;
-  box-shadow:0 8px 24px -8px rgba(0,224,164,0.6)}
-.user-name-big{font-size:20px;font-weight:900;color:#fff}
-.user-phone-big{font-size:12px;color:#a09a8a;margin-top:4px}
-.user-info-row{display:flex;justify-content:space-between;align-items:center;
-  padding:10px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.05)}
-.user-info-row:last-child{border-bottom:0}
-.user-info-row b{color:#00e0a4;font-weight:900}
 
 /* ============ MAP ============ */
 #mapContainer{
@@ -386,7 +376,6 @@ select.field option{background:#0c0b10;color:#fff}
 [data-theme="light"] .top{background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0.94) 100%);border-bottom-color:rgba(0,224,164,0.25)}
 [data-theme="light"] .bottom{background:linear-gradient(0deg,#fff 0%,rgba(255,255,255,0.96) 100%);border-top-color:rgba(0,224,164,0.25)}
 [data-theme="light"] .theme-btn{background:linear-gradient(160deg,#f0faf6,#d6f0e5);border-color:rgba(0,0,0,0.10)}
-[data-theme="light"] .user-btn{background:linear-gradient(160deg,#00c991,#006644)!important;color:#fff!important}
 [data-theme="light"] .nav{color:#6a8075}
 [data-theme="light"] .nav.active{color:#006644;background:rgba(0,224,164,0.12)}
 [data-theme="light"] .nav.active::before{background:#00b884;box-shadow:0 0 10px #00b884}
@@ -429,10 +418,19 @@ select.field option{background:#0c0b10;color:#fff}
 [data-theme="light"] .splash-tag{color:#4a6055}
 [data-theme="light"] .splash-line{background:linear-gradient(90deg,transparent,#00b884,transparent)}
 [data-theme="light"] .mini-btn{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.08);color:#0a1410}
-[data-theme="light"] .user-name-big{color:#0a1410}
-[data-theme="light"] .user-phone-big{color:#4a6055}
-[data-theme="light"] .user-info-row{border-bottom-color:rgba(0,0,0,0.06)}
-[data-theme="light"] .user-info-row b{color:#006644}
+
+/* Login light theme */
+[data-theme="light"] #loginScreen{
+  background:radial-gradient(circle at 50% 30%, rgba(0,224,164,0.3) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, #e6f2ec 0%, #f0f5f2 70%);
+}
+[data-theme="light"] .login-card{background:linear-gradient(160deg,#fff 0%,#f0faf6 100%);
+  border-color:rgba(0,224,164,0.35);box-shadow:0 20px 60px -20px rgba(0,0,0,0.15)}
+[data-theme="light"] .login-title{color:#0a1410}
+[data-theme="light"] .login-sub{color:#006644}
+[data-theme="light"] .login-desc{color:#4a6055}
+[data-theme="light"] .login-theme-btn{background:linear-gradient(160deg,#f0faf6,#d6f0e5);border-color:rgba(0,0,0,0.10)}
+[data-theme="light"] .login-tag{color:#4a6055}
 </style>
 </head>
 <body>
@@ -448,48 +446,24 @@ select.field option{background:#0c0b10;color:#fff}
   <div class="splash-progress"></div>
 </div>
 
-<!-- AUTH SCREEN -->
-<div id="authScreen" class="hidden">
-  <button class="theme-btn auth-theme" onclick="toggleTheme()" title="تبديل الوضع">☀️</button>
-  <div class="auth-wrap">
-    <div class="auth-logo">⚡</div>
-    <div class="auth-brand">أمبير</div>
-    <div class="auth-tagline">إدارة المولدات الأهلية</div>
-
-    <div class="auth-tabs">
-      <button class="auth-tab active" id="tabLogin" onclick="switchAuth('login')">تسجيل دخول</button>
-      <button class="auth-tab" id="tabSignup" onclick="switchAuth('signup')">إنشاء حساب</button>
+<!-- LOGIN -->
+<div id="loginScreen" class="hidden">
+  <button class="login-theme-btn" onclick="toggleTheme()" title="تبديل الوضع">☀️</button>
+  <div class="login-orb"></div>
+  <div class="login-container">
+    <div class="login-bolt">⚡</div>
+    <div class="login-logo">أمبير</div>
+    <div class="login-sub">إدارة المولدات الأهلية</div>
+    <div class="login-card">
+      <div class="login-title">تسجيل الدخول</div>
+      <div class="login-desc">أدخل بريدك الإلكتروني للمتابعة — لا حاجة لكلمة مرور.</div>
+      <label>البريد الإلكتروني</label>
+      <input class="field" id="loginEmail" type="email" inputmode="email" autocomplete="email"
+             placeholder="example@email.com" onkeydown="if(event.key==='Enter')doLogin()">
+      <div id="loginError" class="login-error hidden"></div>
+      <button class="cta-primary" onclick="doLogin()">دخول →</button>
     </div>
-
-    <!-- LOGIN -->
-    <div id="authLogin" class="auth-panel">
-      <div class="formbox">
-        <label>رقم الهاتف</label>
-        <input class="field" id="loginPhone" type="tel" inputmode="tel" placeholder="07XXXXXXXXX">
-        <label>كلمة المرور</label>
-        <input class="field" id="loginPwd" type="password" placeholder="••••••••">
-        <div class="auth-err" id="loginErr"></div>
-        <button class="cta-primary" style="margin-top:8px" onclick="doLogin()">🔓 دخول</button>
-      </div>
-      <div class="auth-hint">💡 أول مرة تستخدم التطبيق؟ أنشئ حساباً جديداً من الأعلى</div>
-    </div>
-
-    <!-- SIGNUP -->
-    <div id="authSignup" class="auth-panel hidden">
-      <div class="formbox">
-        <label>الاسم الكامل *</label>
-        <input class="field" id="signupName" placeholder="مثلاً: أبو أحمد">
-        <label>رقم الهاتف *</label>
-        <input class="field" id="signupPhone" type="tel" inputmode="tel" placeholder="07XXXXXXXXX">
-        <label>كلمة المرور *</label>
-        <input class="field" id="signupPwd" type="password" placeholder="6 أحرف على الأقل">
-        <label>تأكيد كلمة المرور *</label>
-        <input class="field" id="signupPwd2" type="password" placeholder="••••••••">
-        <div class="auth-err" id="signupErr"></div>
-        <button class="cta-primary" style="margin-top:8px" onclick="doSignup()">✨ إنشاء الحساب</button>
-      </div>
-      <div class="auth-hint">🔒 بياناتك محفوظة على جهازك فقط</div>
-    </div>
+    <div class="login-tag">أمبيرات • فواتير • مشتركين • حسابات</div>
   </div>
 </div>
 
@@ -503,10 +477,11 @@ select.field option{background:#0c0b10;color:#fff}
         <div class="brand-sub">إدارة المولدات</div>
       </div>
     </div>
-    <button class="theme-btn user-btn" id="userBtn" onclick="openUserMenu()" title="حسابي">👤</button>
+    <button class="theme-btn" onclick="openUserMenu()" title="الحساب">👤</button>
   </header>
 
   <main>
+    <!-- ===== HOME ===== -->
     <section id="home" class="screen active">
       <div class="section-title">لوحة التحكم</div>
       <div class="stats-grid">
@@ -549,11 +524,13 @@ select.field option{background:#0c0b10;color:#fff}
       </div>
     </section>
 
+    <!-- ===== GENERATORS ===== -->
     <section id="generators" class="screen">
       <div class="section-title">⚡ المولدات الأهلية</div>
       <div id="genList"></div>
     </section>
 
+    <!-- ===== SUBSCRIBERS ===== -->
     <section id="subscribers" class="screen">
       <div class="section-title">👥 المشتركين</div>
       <div class="search-box">
@@ -563,6 +540,7 @@ select.field option{background:#0c0b10;color:#fff}
       <div id="subList"></div>
     </section>
 
+    <!-- ===== CALCULATOR ===== -->
     <section id="calc" class="screen">
       <div class="section-title">🧮 الحاسبات</div>
       <div class="tabs">
@@ -641,7 +619,7 @@ const $ = id => document.getElementById(id);
 const fmt = n => Number(n).toLocaleString('en-US');
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const haptic = () => { if (navigator.vibrate) try { navigator.vibrate(15); } catch(e){} };
-const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 const now = () => Date.now();
 const DAY_MS = 86400000;
 const SUB_PERIOD_DAYS = 30;
@@ -679,7 +657,7 @@ function applyTheme(t){
   document.documentElement.setAttribute('data-theme', t);
   const meta = document.querySelector('meta[name="theme-color"]');
   if (meta) meta.content = t === 'dark' ? '#050507' : '#f0f5f2';
-  document.querySelectorAll('.theme-btn').forEach(btn => {
+  document.querySelectorAll('.theme-btn, .login-theme-btn').forEach(btn => {
     if (btn.title && btn.title.includes('الوضع')) btn.textContent = t === 'dark' ? '☀️' : '🌙';
   });
   try { localStorage.setItem(THEME_KEY, t); } catch(e){}
@@ -692,229 +670,103 @@ function toggleTheme(){
 applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
 
 /* ============ AUTH ============ */
-const AUTH_USERS_KEY = 'ampere_users';
-const AUTH_SESSION_KEY = 'ampere_session';
+const USER_KEY = 'ampere_user_email';
 
-function hashPassword(pwd){
-  let h = 0;
-  for (let i = 0; i < pwd.length; i++){
-    h = ((h << 5) - h) + pwd.charCodeAt(i);
-    h |= 0;
-  }
-  return 'h' + Math.abs(h).toString(36) + '_' + pwd.length;
+function getCurrentUser(){
+  try { return localStorage.getItem(USER_KEY) || ''; } catch(e){ return ''; }
 }
 
-function getUsers(){
-  try { return JSON.parse(localStorage.getItem(AUTH_USERS_KEY) || '[]'); }
-  catch(e){ return []; }
-}
-function saveUsers(u){
-  try { localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(u)); } catch(e){}
-}
-function getSessionUser(){
-  try {
-    const raw = localStorage.getItem(AUTH_SESSION_KEY);
-    if (!raw) return null;
-    const sess = JSON.parse(raw);
-    if (!sess || !sess.userId) return null;
-    return getUsers().find(u => u.id === sess.userId) || null;
-  } catch(e){ return null; }
-}
-function setSession(userId){
-  try { localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({ userId, at: now() })); } catch(e){}
-}
-function clearSession(){
-  try { localStorage.removeItem(AUTH_SESSION_KEY); } catch(e){}
-}
-
-function dataKey(base){
-  const u = getSessionUser();
-  return u ? `${base}__${u.id}` : base;
-}
-
-function migrateLegacyData(newUserId){
-  let migrated = false;
-  const legacyGens = localStorage.getItem('ampere_generators');
-  const legacySubs = localStorage.getItem('ampere_subscribers');
-  if (legacyGens && !localStorage.getItem(`ampere_generators__${newUserId}`)){
-    localStorage.setItem(`ampere_generators__${newUserId}`, legacyGens);
-    localStorage.removeItem('ampere_generators');
-    migrated = true;
-  }
-  if (legacySubs && !localStorage.getItem(`ampere_subscribers__${newUserId}`)){
-    localStorage.setItem(`ampere_subscribers__${newUserId}`, legacySubs);
-    localStorage.removeItem('ampere_subscribers');
-  }
-  if (migrated) {
-    localStorage.setItem(`ampere_seeded__${newUserId}`, '1');
-  }
-  if (localStorage.getItem('ampere_seeded')){
-    localStorage.removeItem('ampere_seeded');
-  }
-}
-
-function switchAuth(tab){
-  $('tabLogin').classList.toggle('active', tab === 'login');
-  $('tabSignup').classList.toggle('active', tab === 'signup');
-  $('authLogin').classList.toggle('hidden', tab !== 'login');
-  $('authSignup').classList.toggle('hidden', tab !== 'signup');
-  $('loginErr').textContent = '';
-  $('signupErr').textContent = '';
+function showLoginError(msg){
+  const errEl = $('loginError');
+  if (!errEl) return;
+  errEl.textContent = msg;
+  errEl.classList.remove('hidden');
   haptic();
-}
-
-function doSignup(){
-  const name = ($('signupName').value || '').trim();
-  const phone = ($('signupPhone').value || '').trim();
-  const pwd = $('signupPwd').value || '';
-  const pwd2 = $('signupPwd2').value || '';
-  const err = $('signupErr');
-
-  if (!name){ err.textContent = '⚠️ الاسم مطلوب'; return; }
-  if (phone.length < 7){ err.textContent = '⚠️ رقم الهاتف غير صالح'; return; }
-  if (!/^[0-9+\-\s]+$/.test(phone)){ err.textContent = '⚠️ رقم الهاتف يحتوي رموزاً غير صحيحة'; return; }
-  if (pwd.length < 6){ err.textContent = '⚠️ كلمة المرور 6 أحرف على الأقل'; return; }
-  if (pwd !== pwd2){ err.textContent = '⚠️ كلمتا المرور غير متطابقتين'; return; }
-
-  const users = getUsers();
-  if (users.some(u => u.phone === phone)){
-    err.textContent = '⚠️ هذا الرقم مسجل مسبقاً — جرّب الدخول';
-    return;
-  }
-
-  const newUser = {
-    id: uid(),
-    name,
-    phone,
-    passwordHash: hashPassword(pwd),
-    createdAt: now()
-  };
-  users.push(newUser);
-  saveUsers(users);
-
-  migrateLegacyData(newUser.id);
-  setSession(newUser.id);
-
-  haptic();
-  toast('🎉 مرحباً ' + name + ' — تم إنشاء حسابك', 'success');
-
-  $('signupName').value = '';
-  $('signupPhone').value = '';
-  $('signupPwd').value = '';
-  $('signupPwd2').value = '';
-  err.textContent = '';
-
-  enterApp();
 }
 
 function doLogin(){
-  const phone = ($('loginPhone').value || '').trim();
-  const pwd = $('loginPwd').value || '';
-  const err = $('loginErr');
+  const input = $('loginEmail');
+  const email = (input.value || '').trim().toLowerCase();
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (!phone){ err.textContent = '⚠️ أدخل رقم الهاتف'; return; }
-  if (!pwd){ err.textContent = '⚠️ أدخل كلمة المرور'; return; }
-
-  const user = getUsers().find(u => u.phone === phone);
-  if (!user){ err.textContent = '⚠️ لا يوجد حساب بهذا الرقم'; return; }
-  if (user.passwordHash !== hashPassword(pwd)){
-    err.textContent = '⚠️ كلمة المرور غير صحيحة';
+  if (!email){
+    showLoginError('⚠️ الرجاء إدخال البريد الإلكتروني');
+    input.focus();
+    return;
+  }
+  if (!re.test(email)){
+    showLoginError('⚠️ البريد الإلكتروني غير صالح');
+    input.focus();
     return;
   }
 
-  setSession(user.id);
+  $('loginError').classList.add('hidden');
+  try { localStorage.setItem(USER_KEY, email); } catch(e){}
+
   haptic();
-  toast('👋 أهلاً بعودتك ' + user.name, 'success');
+  const screen = $('loginScreen');
+  screen.classList.add('login-out');
 
-  $('loginPhone').value = '';
-  $('loginPwd').value = '';
-  err.textContent = '';
-
-  enterApp();
-}
-
-function doLogout(){
-  const u = getSessionUser();
-  if (!u) return;
-  clearSession();
-  closeModal();
-  haptic();
-  toast('👋 تم تسجيل الخروج', 'gold');
   setTimeout(() => {
-    showAuth();
-  }, 200);
+    screen.classList.add('hidden');
+    screen.classList.remove('login-out');
+    enterApp(true);
+  }, 380);
 }
 
-function updateUserBtn(){
-  const u = getSessionUser();
-  const btn = $('userBtn');
-  if (!btn) return;
-  if (u){
-    const initial = u.name ? u.name.trim().charAt(0) : '👤';
-    btn.textContent = initial;
-  } else {
-    btn.textContent = '👤';
+function enterApp(showWelcome){
+  $('app').classList.remove('hidden');
+  renderNav();
+  renderHome();
+  goScreen('home');
+  seedIfNeeded();
+  if (showWelcome){
+    const email = getCurrentUser();
+    const name = email ? email.split('@')[0] : '';
+    toast('👋 مرحباً بك' + (name ? ' ' + name : ''), 'success');
   }
 }
 
+function logout(){
+  closeModal();
+  try { localStorage.removeItem(USER_KEY); } catch(e){}
+  haptic();
+  toast('تم تسجيل الخروج', 'gold');
+  setTimeout(() => location.reload(), 550);
+}
+
 function openUserMenu(){
-  const u = getSessionUser();
-  if (!u){ showAuth(); return; }
-
-  const gens = getGenerators();
-  const subs = getSubscribers();
-  let revenue = 0;
-  subs.forEach(s => {
-    const g = gens.find(x => x.id === s.generatorId);
-    const price = g ? Number(g.pricePerAmp) : Number(s.pricePerAmp || 0);
-    revenue += Number(s.amps) * price;
-  });
-
-  openModal('👤 حسابي', `
-    <div style="text-align:center;padding:6px 0 16px">
-      <div class="user-avatar-big">${esc((u.name || '?').charAt(0))}</div>
-      <div class="user-name-big">${esc(u.name)}</div>
-      <div class="user-phone-big">📞 ${esc(u.phone)}</div>
+  const email = getCurrentUser() || '—';
+  const initial = (email.charAt(0) || '?').toUpperCase();
+  openModal('👤 الحساب', `
+    <div style="text-align:center;padding:12px 0 4px">
+      <div style="width:76px;height:76px;margin:0 auto 14px;border-radius:50%;
+        background:linear-gradient(160deg,#00e0a4,#006644);color:#042018;
+        display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;
+        box-shadow:0 8px 24px -8px rgba(0,224,164,0.6)">${esc(initial)}</div>
+      <div style="font-size:11.5px;color:#a09a8a;margin-bottom:6px">مسجّل الدخول بـ</div>
+      <div style="font-size:14px;font-weight:900;color:#fff;word-break:break-all;padding:0 10px">${esc(email)}</div>
     </div>
-
-    <div style="padding:6px 14px;background:rgba(0,224,164,0.06);border:1px solid rgba(0,224,164,0.2);border-radius:14px">
-      <div class="user-info-row">
-        <span>⚡ المولدات</span>
-        <b>${fmt(gens.length)}</b>
-      </div>
-      <div class="user-info-row">
-        <span>👥 المشتركين</span>
-        <b>${fmt(subs.length)}</b>
-      </div>
-      <div class="user-info-row">
-        <span>💰 الإيراد الشهري</span>
-        <b>${fmt(Math.round(revenue))} د.ع</b>
-      </div>
-      <div class="user-info-row">
-        <span>📅 عضو منذ</span>
-        <b>${formatDate(u.createdAt)}</b>
-      </div>
+    <div class="divider"></div>
+    <div style="font-size:11.5px;color:#6a6659;text-align:center;line-height:1.8;margin-bottom:6px">
+      يتم حفظ بياناتك محلياً على هذا الجهاز فقط.
     </div>
-
-    <div class="modal-actions">
-      <button class="cta-ghost" style="margin-top:0" onclick="closeModal()">إغلاق</button>
-      <button class="cta-primary cta-danger-solid" style="margin-top:0" onclick="doLogout()">🚪 تسجيل الخروج</button>
-    </div>
+    <button class="cta-ghost cta-danger" style="margin-top:0" onclick="logout()">🚪 تسجيل الخروج</button>
   `);
 }
 
 /* ============ DATA ============ */
-const KEYS_BASE = {
+const KEYS = {
   generators: 'ampere_generators',
   subscribers: 'ampere_subscribers'
 };
 
 function load(key){ try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ return []; } }
 function save(key, data){ try { localStorage.setItem(key, JSON.stringify(data)); } catch(e){} }
-function getGenerators(){ return load(dataKey(KEYS_BASE.generators)); }
-function getSubscribers(){ return load(dataKey(KEYS_BASE.subscribers)); }
-function saveGenerators(d){ save(dataKey(KEYS_BASE.generators), d); renderAll(); }
-function saveSubscribers(d){ save(dataKey(KEYS_BASE.subscribers), d); renderAll(); }
+function getGenerators(){ return load(KEYS.generators); }
+function getSubscribers(){ return load(KEYS.subscribers); }
+function saveGenerators(d){ save(KEYS.generators, d); renderAll(); }
+function saveSubscribers(d){ save(KEYS.subscribers, d); renderAll(); }
 
 /* ============ TOAST ============ */
 let toastTimer = null;
@@ -972,9 +824,12 @@ function handleFab(){
 function renderHome(){
   const gens = getGenerators();
   const subs = getSubscribers();
+
   $('statGens').textContent = gens.length;
   $('statSubs').textContent = subs.length;
-  let revenue = 0, totalAmps = 0;
+
+  let revenue = 0;
+  let totalAmps = 0;
   subs.forEach(s => {
     const g = gens.find(x => x.id === s.generatorId);
     const price = g ? Number(g.pricePerAmp) : Number(s.pricePerAmp || 0);
@@ -1193,7 +1048,10 @@ function confirmDeleteSub(id){
 
     <div class="modal-actions">
       <button class="cta-ghost" style="margin-top:0" onclick="closeModal()">إلغاء</button>
-      <button class="cta-primary cta-danger-solid" style="margin-top:0" onclick="doDeleteSub('${id}')">🗑️ حذف نهائي</button>
+      <button class="cta-primary" style="margin-top:0;
+        background:linear-gradient(180deg,#ff8da1,#ff4d6d 50%,#d63350);color:#fff;
+        box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 6px 0 #8a0030,0 16px 30px -10px rgba(255,77,109,0.5)"
+        onclick="doDeleteSub('${id}')">🗑️ حذف نهائي</button>
     </div>
   `);
 }
@@ -1268,6 +1126,7 @@ function saveSub(id){
   if (!name){ toast('اسم المشترك مطلوب', 'error'); return; }
   if (amps <= 0){ toast('أدخل عدد الأمبيرات', 'error'); return; }
   const existing = id ? getSubscribers().find(s => s.id === id) : null;
+
   const latRaw = $('mSubLat')?.value;
   const lngRaw = $('mSubLng')?.value;
   const lat = (latRaw !== '' && latRaw != null && !isNaN(Number(latRaw))) ? Number(latRaw) : null;
@@ -1282,7 +1141,8 @@ function saveSub(id){
     amps,
     pricePerAmp: Number($('mSubPrice').value) || 0,
     startDate: dateStrToTs($('mSubStart').value),
-    lat, lng,
+    lat,
+    lng,
     notes: $('mSubNotes').value.trim(),
     createdAt: existing?.createdAt || now()
   };
@@ -1304,6 +1164,7 @@ function captureLocation(btn){
   const orig = btn.textContent;
   btn.textContent = '⏳ جاري التحديد...';
   btn.disabled = true;
+
   navigator.geolocation.getCurrentPosition(
     (pos) => {
       const latEl = $('mSubLat');
@@ -1348,11 +1209,13 @@ let leafletLoading = null;
 function ensureLeaflet(){
   if (typeof L !== 'undefined') return Promise.resolve(true);
   if (leafletLoading) return leafletLoading;
+
   leafletLoading = new Promise((resolve) => {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
     document.head.appendChild(link);
+
     const script = document.createElement('script');
     script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
     script.onload = () => resolve(true);
@@ -1369,6 +1232,7 @@ function openMapModal(subId){
     toast('لا يوجد موقع محفوظ لهذا المشترك', 'error');
     return;
   }
+
   const gens = getGenerators();
   const gen = sub.generatorId ? gens.find(g => g.id === sub.generatorId) : null;
 
@@ -1391,38 +1255,59 @@ function openMapModal(subId){
   setTimeout(() => {
     const mapEl = document.getElementById('mapContainer');
     if (!mapEl) return;
+
     ensureLeaflet().then((ok) => {
       if (!ok || typeof L === 'undefined'){
-        mapEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;padding:20px;text-align:center;color:#a09a8a"><div style="font-size:44px;margin-bottom:12px">🗺️</div><div style="font-size:14px;font-weight:900">تعذر تحميل الخريطة</div><div style="font-size:11px;margin-top:6px">تحقق من اتصال الإنترنت</div><div style="font-size:11px;margin-top:8px;color:#00e0a4">استخدم زر Google Maps أدناه</div></div>';
+        mapEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;padding:20px;text-align:center;color:#a09a8a"><div style="font-size:44px;margin-bottom:12px">🗺️</div><div style="font-size:14px;font-weight:900">تعذر تحميل الخريطة</div><div style="font-size:11px;margin-top:6px">تحقق من اتصال الإنترنت</div><div style="font-size:11px;margin-top:8px;color:#00e0a4">يمكنك استخدام زر Google Maps أدناه</div></div>';
         return;
       }
-      if (mapInstance){ try { mapInstance.remove(); } catch(e){} mapInstance = null; }
+
+      if (mapInstance){
+        try { mapInstance.remove(); } catch(e){}
+        mapInstance = null;
+      }
+
       const theme = document.documentElement.getAttribute('data-theme') || 'dark';
       const tileUrl = theme === 'dark'
         ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
         : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
       mapInstance = L.map('mapContainer', {
-        center: [sub.lat, sub.lng], zoom: 16,
-        zoomControl: true, attributionControl: true
+        center: [sub.lat, sub.lng],
+        zoom: 16,
+        zoomControl: true,
+        attributionControl: true
       });
+
       L.tileLayer(tileUrl, {
         attribution: '© OpenStreetMap © CARTO',
-        maxZoom: 19, subdomains: 'abcd'
+        maxZoom: 19,
+        subdomains: 'abcd'
       }).addTo(mapInstance);
+
       const pulseIcon = L.divIcon({
         className: '',
         html: '<div class="custom-marker-pulse" style="width:34px;height:34px;background:linear-gradient(180deg,#00ffc0,#00b884);border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 4px 12px rgba(0,224,164,0.6)">⚡</div>',
-        iconSize: [34, 34], iconAnchor: [17, 17], popupAnchor: [0, -17]
+        iconSize: [34, 34],
+        iconAnchor: [17, 17],
+        popupAnchor: [0, -17]
       });
+
       const popupHtml = `<div style="text-align:center;min-width:140px">
         <div style="font-weight:900;font-size:14px;margin-bottom:4px">${esc(sub.name)}</div>
         ${sub.location ? `<div style="font-size:11px;opacity:.8">📍 ${esc(sub.location)}</div>` : ''}
         ${gen ? `<div style="font-size:11px;opacity:.8;margin-top:2px">⚡ ${esc(gen.name)}</div>` : ''}
         <div style="font-size:11px;color:#00e0a4;margin-top:6px;font-weight:900">${fmt(sub.amps)} أمبير</div>
       </div>`;
+
       L.marker([sub.lat, sub.lng], { icon: pulseIcon })
-        .addTo(mapInstance).bindPopup(popupHtml).openPopup();
-      setTimeout(() => { try { mapInstance.invalidateSize(); } catch(e){} }, 250);
+        .addTo(mapInstance)
+        .bindPopup(popupHtml)
+        .openPopup();
+
+      setTimeout(() => {
+        try { mapInstance.invalidateSize(); } catch(e){}
+      }, 250);
     });
   }, 120);
 }
@@ -1465,11 +1350,16 @@ function calcSub(){
   const price = Number($('calcPrice').value) || 0;
   const months = Number($('calcMonths').value) || 1;
   const disc = Number($('calcDiscount').value) || 0;
-  if (amps <= 0 || price <= 0){ $('calcSubResult').style.display = 'none'; return; }
+
+  if (amps <= 0 || price <= 0){
+    $('calcSubResult').style.display = 'none';
+    return;
+  }
   const monthly = amps * price;
-  const subtotal = monthly * months;
-  const discountAmt = subtotal * disc / 100;
-  const total = subtotal - discountAmt;
+  let subtotal = monthly * months;
+  let discountAmt = subtotal * disc / 100;
+  let total = subtotal - discountAmt;
+
   $('calcSubResult').style.display = 'block';
   $('calcSubTotal').innerHTML = fmt(Math.round(total)) + ' <small>د.ع</small>';
   $('calcSubBreak').innerHTML = `
@@ -1482,9 +1372,13 @@ function calcSub(){
 function calcSale(){
   const cost = Number($('saleCost').value) || 0;
   const margin = Number($('saleMargin').value) || 0;
-  if (cost <= 0 || margin < 0){ $('calcSaleResult').style.display = 'none'; return; }
+  if (cost <= 0 || margin < 0){
+    $('calcSaleResult').style.display = 'none';
+    return;
+  }
   const profit = cost * margin / 100;
   const total = cost + profit;
+
   $('calcSaleResult').style.display = 'block';
   $('calcSaleTotal').innerHTML = fmt(Math.round(total)) + ' <small>د.ع</small>';
   $('calcSaleBreak').innerHTML = `
@@ -1515,10 +1409,15 @@ function calcInvoice(){
   const price = Number($('invPrice').value) || 0;
   const months = Number($('invMonths').value) || 1;
   const extra = Number($('invExtra').value) || 0;
-  if (amps <= 0 || price <= 0){ $('calcInvResult').style.display = 'none'; return; }
+
+  if (amps <= 0 || price <= 0){
+    $('calcInvResult').style.display = 'none';
+    return;
+  }
   const monthly = amps * price;
   const subtotal = monthly * months;
   const total = subtotal + extra;
+
   $('calcInvResult').style.display = 'block';
   $('calcInvTotal').innerHTML = fmt(Math.round(total)) + ' <small>د.ع</small>';
   $('calcInvBreak').innerHTML = `
@@ -1530,7 +1429,10 @@ function calcInvoice(){
 
 /* ============ MODAL ============ */
 function openModal(title, body){
-  if (mapInstance){ try { mapInstance.remove(); } catch(e){} mapInstance = null; }
+  if (mapInstance){
+    try { mapInstance.remove(); } catch(e){}
+    mapInstance = null;
+  }
   $('modalRoot').innerHTML = `
     <div class="modal-back" onclick="if(event.target===this)closeModal()">
       <div class="modal">
@@ -1543,51 +1445,29 @@ function openModal(title, body){
     </div>`;
 }
 function closeModal(){
-  if (mapInstance){ try { mapInstance.remove(); } catch(e){} mapInstance = null; }
+  if (mapInstance){
+    try { mapInstance.remove(); } catch(e){}
+    mapInstance = null;
+  }
   $('modalRoot').innerHTML = '';
 }
 
 /* ============ RENDER ALL ============ */
 function renderAll(){
-  const u = getSessionUser();
-  if (!u) return;
   renderHome();
   if (currentScreen === 'generators') renderGenerators();
   if (currentScreen === 'subscribers') renderSubscribers();
   if (currentScreen === 'calc') initCalcSelects();
 }
 
-/* ============ FLOW ============ */
-function showAuth(){
-  $('app').classList.add('hidden');
-  $('authScreen').classList.remove('hidden');
-  switchAuth('login');
-  if (mapInstance){ try { mapInstance.remove(); } catch(e){} mapInstance = null; }
-  $('modalRoot').innerHTML = '';
-}
-
-function enterApp(){
-  $('authScreen').classList.add('hidden');
-  $('app').classList.remove('hidden');
-  updateUserBtn();
-  renderNav();
-  renderHome();
-  goScreen('home');
-  seedIfEmpty();
-}
-
-function seedIfEmpty(){
-  const u = getSessionUser();
-  if (!u) return;
-  const seedKey = `ampere_seeded__${u.id}`;
-  const gens = getGenerators();
-  if (gens.length === 0 && !localStorage.getItem(seedKey)){
-    localStorage.setItem(seedKey, '1');
+/* ============ SEED ============ */
+function seedIfNeeded(){
+  if (getGenerators().length === 0 && !localStorage.getItem('ampere_seeded')){
+    localStorage.setItem('ampere_seeded', '1');
     saveGenerators([{
       id: uid(), name: 'مولد الحي التجاري', location: 'الكرادة',
       capacity: 200, pricePerAmp: 12000, hours: 10, notes: 'يعمل من 6ص - 4م'
     }]);
-    setTimeout(() => toast('👋 مرحباً بك في أمبير — أضف أول مولداتك', 'gold'), 400);
   }
 }
 
@@ -1595,9 +1475,19 @@ function seedIfEmpty(){
 function init(){
   setTimeout(() => {
     $('splash').classList.add('done');
-    const u = getSessionUser();
-    if (u) enterApp();
-    else showAuth();
+
+    const user = getCurrentUser();
+    if (user){
+      // مستخدم مسجل مسبقاً → ادخل مباشرة
+      enterApp(false);
+    } else {
+      // عرض شاشة تسجيل الدخول
+      $('loginScreen').classList.remove('hidden');
+      setTimeout(() => {
+        const inp = $('loginEmail');
+        if (inp) inp.focus();
+      }, 300);
+    }
   }, 3400);
 }
 
@@ -1605,12 +1495,6 @@ init();
 
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
-  if (e.key === 'Enter'){
-    if (!$('authScreen').classList.contains('hidden')){
-      if (!$('authLogin').classList.contains('hidden')) doLogin();
-      else if (!$('authSignup').classList.contains('hidden')) doSignup();
-    }
-  }
 });
 </script>
 </body>
