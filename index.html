@@ -2,29 +2,40 @@
 <html lang="ar" dir="rtl" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#050507">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no,address=no,email=no">
+<meta name="application-name" content="أمبير">
+<meta name="description" content="إدارة المولدات الأهلية — أمبيرات، فواتير، مشتركين، حسابات">
 <title>أمبير — إدارة المولدات الأهلية</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0}
+html,body{margin:0;padding:0;-webkit-text-size-adjust:100%}
 html[data-theme="dark"]{color-scheme:dark}
 html[data-theme="light"]{color-scheme:light}
 body{
   background:#050507;color:#fff;
   font-family:-apple-system,'SF Arabic','Segoe UI',Tahoma,Arial,sans-serif;
-  min-height:100vh;overflow-x:hidden;user-select:none;
+  min-height:100vh;min-height:100dvh;
+  overflow-x:hidden;user-select:none;-webkit-user-select:none;
+  overscroll-behavior-y:contain;-webkit-touch-callout:none;
+  touch-action:manipulation;
   transition:background .3s,color .3s;
 }
-input,textarea,select{user-select:text;font-family:inherit}
-button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,textarea,select{user-select:text;-webkit-user-select:text;font-family:inherit;font-size:16px!important}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit;touch-action:manipulation}
+img{-webkit-user-drag:none;pointer-events:none}
 
 :root{
   --primary:#00e0a4;--primary-2:#00b884;--primary-3:#006644;
   --gold:#ffd24a;--gold-2:#ffb800;--gold-3:#8a6200;
   --border:rgba(0,224,164,0.18);
   --radius:20px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
   --success:#00e0a4;--danger:#ff4d6d;--warning:#ffaa33;--info:#4ea1ff;
 }
 .hidden{display:none!important}
@@ -36,6 +47,7 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
     radial-gradient(circle at 50% 50%, #0a1410 0%, #050507 70%);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   overflow:hidden;transition:opacity .8s,visibility .8s;
+  padding-top:var(--safe-top);padding-bottom:var(--safe-bottom);
 }
 #splash.done{opacity:0;visibility:hidden}
 .splash-orb{position:absolute;width:340px;height:340px;border-radius:50%;
@@ -63,7 +75,7 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .splash-tag{position:relative;z-index:2;margin-top:18px;font-size:12px;color:#a09a8a;letter-spacing:2px;
   animation:fadeInUp .8s ease 2.2s forwards;opacity:0;}
 @keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.splash-progress{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);
+.splash-progress{position:absolute;bottom:calc(60px + var(--safe-bottom));left:50%;transform:translateX(-50%);
   width:160px;height:3px;border-radius:3px;background:rgba(0,224,164,0.12);overflow:hidden;
   animation:fadeInUp .6s ease 1s forwards;opacity:0;}
 .splash-progress::after{content:'';position:absolute;inset:0;
@@ -77,31 +89,28 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   background:radial-gradient(circle at 50% 30%, rgba(0,224,164,0.18) 0%, transparent 55%),
     radial-gradient(circle at 50% 50%, #0a1410 0%, #050507 70%);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:24px;overflow-y:auto;
+  padding:calc(24px + var(--safe-top)) 24px calc(24px + var(--safe-bottom));
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
   animation:fadeIn .5s;
 }
 #loginScreen.login-out{opacity:0;transition:opacity .4s;pointer-events:none}
 .login-orb{position:absolute;top:18%;width:320px;height:320px;border-radius:50%;
   background:radial-gradient(circle,rgba(0,224,164,0.18) 0%,transparent 65%);
   filter:blur(40px);animation:orbPulse 3s ease-in-out infinite;pointer-events:none}
-.login-theme-btn{position:absolute;top:18px;left:18px;z-index:10;
+.login-theme-btn{position:absolute;top:calc(18px + var(--safe-top));left:18px;z-index:10;
   width:42px;height:42px;border-radius:13px;
   background:linear-gradient(160deg,#1a1820,#0c0b10);
   border:1px solid rgba(255,255,255,0.10);font-size:20px;
-  display:flex;align-items:center;justify-content:center;
-  transition:transform .2s;}
+  display:flex;align-items:center;justify-content:center;transition:transform .2s;}
 .login-theme-btn:active{transform:scale(.92) rotate(20deg)}
-.login-container{position:relative;z-index:2;width:100%;max-width:420px;
-  animation:fadeInUp .6s ease}
+.login-container{position:relative;z-index:2;width:100%;max-width:420px;animation:fadeInUp .6s ease}
 .login-bolt{font-size:64px;text-align:center;margin-bottom:8px;
-  filter:drop-shadow(0 0 30px rgba(0,224,164,0.7));
-  animation:boltFloat 2.5s ease-in-out infinite}
+  filter:drop-shadow(0 0 30px rgba(0,224,164,0.7));animation:boltFloat 2.5s ease-in-out infinite}
 .login-logo{font-size:42px;font-weight:900;letter-spacing:4px;text-align:center;
   background:linear-gradient(90deg,#006644,#00e0a4,#b8fff0,#00e0a4,#006644);background-size:220% 100%;
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
   animation:shimmer 3s linear infinite;line-height:1}
-.login-sub{font-size:13px;letter-spacing:2px;color:#00e0a4;font-weight:700;
-  text-align:center;margin-top:6px;margin-bottom:26px}
+.login-sub{font-size:13px;letter-spacing:2px;color:#00e0a4;font-weight:700;text-align:center;margin-top:6px;margin-bottom:26px}
 .login-card{background:linear-gradient(160deg,#14121a 0%,#0a090f 100%);
   border:1px solid rgba(0,224,164,0.25);border-radius:24px;padding:24px 20px;
   box-shadow:0 20px 60px -20px rgba(0,224,164,0.3),0 0 0 1px rgba(0,224,164,0.05);}
@@ -113,9 +122,9 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .login-tag{text-align:center;font-size:11px;color:#6a6659;margin-top:20px;letter-spacing:1px}
 
 /* ============ APP ============ */
-#app{max-width:520px;min-height:100vh;margin:0 auto;position:relative;
+#app{max-width:520px;min-height:100vh;min-height:100dvh;margin:0 auto;position:relative;
   background:radial-gradient(circle at 50% 0%, rgba(0,224,164,0.06) 0%, transparent 40%),#050507;
-  overflow:hidden;}
+  overflow:hidden;padding-top:var(--safe-top);}
 .top{position:sticky;top:0;z-index:100;min-height:64px;
   display:flex;align-items:center;justify-content:space-between;padding:10px 12px;gap:8px;
   background:linear-gradient(180deg,#0a0a0f 0%,rgba(10,10,15,0.92) 100%);
@@ -133,7 +142,7 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
   transition:transform .2s,background .3s,border-color .3s;}
 .theme-btn:active{transform:scale(.92) rotate(20deg)}
 
-.screen{display:none;padding:16px 16px 100px;animation:screenIn .35s}
+.screen{display:none;padding:16px 16px calc(100px + var(--safe-bottom));animation:screenIn .35s}
 .screen.active{display:block}
 @keyframes screenIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .section-title{font-size:18px;font-weight:900;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
@@ -141,10 +150,11 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .muted{color:#a09a8a;font-size:13px;line-height:1.7}
 
 .bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
-  width:min(520px,100%);height:72px;z-index:500;
+  width:min(520px,100%);height:calc(72px + var(--safe-bottom));z-index:500;
+  padding-bottom:var(--safe-bottom);
   background:linear-gradient(0deg,#0a0a0f 0%,rgba(10,10,15,0.96) 100%);
   backdrop-filter:blur(20px);border-top:1px solid rgba(0,224,164,0.10);
-  display:flex;justify-content:space-around;align-items:center;padding:0 6px;}
+  display:flex;justify-content:space-around;align-items:center;padding-left:6px;padding-right:6px;}
 .nav{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
   color:#6a6659;font-size:10px;font-weight:700;padding:8px 4px;border-radius:14px;
   transition:color .2s,background .2s;position:relative;}
@@ -155,8 +165,7 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 
 .cta-primary{width:100%;padding:16px;margin-top:16px;border-radius:18px;
   font-size:16px;font-weight:900;
-  background:linear-gradient(180deg,#00ffc0 0%,#00e0a4 45%,#00b884 100%);
-  color:#042018;
+  background:linear-gradient(180deg,#00ffc0 0%,#00e0a4 45%,#00b884 100%);color:#042018;
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.5),0 6px 0 #006644,0 16px 30px -10px rgba(0,224,164,0.45);
   transition:transform .1s;}
 .cta-primary:active{transform:translateY(4px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 2px 0 #006644}
@@ -165,16 +174,14 @@ button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit
 .cta-gold:active{box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 2px 0 #8a6200}
 .cta-ghost{width:100%;padding:14px;margin-top:10px;
   background:linear-gradient(160deg,#1a1820,#0c0b10);
-  border:1px solid rgba(255,255,255,0.10);
-  color:#e8e3d4;font-weight:700;font-size:14px;border-radius:16px;
+  border:1px solid rgba(255,255,255,0.10);color:#e8e3d4;font-weight:700;font-size:14px;border-radius:16px;
   transition:transform .1s;}
 .cta-ghost:active{transform:scale(.97)}
 .cta-danger{background:rgba(255,77,109,0.12);color:#ff4d6d;border:1px solid rgba(255,77,109,0.3)}
 
 .field{width:100%;padding:14px 16px;margin-top:8px;
-  background:#0c0b10;border:1px solid rgba(255,255,255,0.09);
-  border-radius:14px;color:#fff;font-size:14px;outline:none;
-  transition:border-color .2s;}
+  background:#0c0b10;border:1px solid rgba(255,255,255,0.09);border-radius:14px;color:#fff;
+  font-size:16px;outline:none;transition:border-color .2s;}
 .field::placeholder{color:#5a554a}
 .field:focus{border-color:rgba(0,224,164,0.55);box-shadow:0 0 0 3px rgba(0,224,164,0.10)}
 label{display:block;font-size:12px;color:#a09a8a;font-weight:700;margin-top:12px}
@@ -250,14 +257,18 @@ label:first-child{margin-top:0}
 .search-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);
   font-size:16px;color:#6a6659;pointer-events:none}
 
-.fab{position:fixed;bottom:88px;left:50%;transform:translateX(calc(-50% + 220px));
+.fab{position:fixed;bottom:calc(88px + var(--safe-bottom));left:50%;
+  transform:translateX(calc(-50% + 220px));
   width:56px;height:56px;border-radius:50%;z-index:600;
   background:linear-gradient(180deg,#00ffc0,#00b884);color:#042018;
   font-size:28px;font-weight:900;display:flex;align-items:center;justify-content:center;
   box-shadow:0 8px 20px rgba(0,224,164,0.5),0 4px 0 #006644;
   transition:transform .15s;}
 .fab:active{transform:translateX(calc(-50% + 220px)) scale(.92)}
-@media(max-width:520px){.fab{left:auto;right:20px;transform:none}.fab:active{transform:scale(.92)}}
+@media(max-width:520px){
+  .fab{left:auto;right:20px;transform:none}
+  .fab:active{transform:scale(.92)}
+}
 
 .tabs{display:flex;gap:6px;margin:0 0 14px;padding:4px;
   background:#0c0b10;border:1px solid rgba(255,255,255,0.08);border-radius:16px;}
@@ -290,11 +301,11 @@ label:first-child{margin-top:0}
   backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;
   animation:fadeIn .25s;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{width:min(520px,100%);max-height:88vh;overflow-y:auto;
+.modal{width:min(520px,100%);max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
   background:linear-gradient(180deg,#14121a,#0a090f);
   border-radius:24px 24px 0 0;
   border-top:1px solid rgba(0,224,164,0.3);
-  padding:20px 20px 32px;
+  padding:20px 20px calc(32px + var(--safe-bottom));
   animation:slideUp .3s cubic-bezier(.2,.9,.2,1);}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
@@ -304,7 +315,8 @@ label:first-child{margin-top:0}
 .modal-close:active{background:rgba(255,77,109,0.2);color:#ff4d6d}
 .modal-actions{display:flex;gap:8px;margin-top:20px}
 
-.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
+.toast{position:fixed;bottom:calc(90px + var(--safe-bottom));left:50%;
+  transform:translateX(-50%) translateY(20px);
   background:linear-gradient(160deg,#1a1820,#0c0b10);
   border:1px solid rgba(0,224,164,0.4);color:#fff;font-size:13px;font-weight:700;
   padding:12px 20px;border-radius:14px;
@@ -327,26 +339,17 @@ select.field option{background:#0c0b10;color:#fff}
 
 .divider{height:1px;background:rgba(255,255,255,0.06);margin:14px 0}
 
-#mapContainer{
-  width:100%;height:340px;border-radius:16px;overflow:hidden;
+#mapContainer{width:100%;height:340px;border-radius:16px;overflow:hidden;
   border:1px solid rgba(0,224,164,0.3);background:#0c0b10;
-  position:relative;z-index:1;touch-action:none;
-}
+  position:relative;z-index:1;touch-action:pan-x pan-y;}
 .leaflet-container{background:#0c0b10!important;font-family:inherit!important}
-.leaflet-popup-content-wrapper{
-  background:#1a1820!important;color:#fff!important;
+.leaflet-popup-content-wrapper{background:#1a1820!important;color:#fff!important;
   border-radius:12px!important;border:1px solid rgba(0,224,164,0.4)!important;
-  box-shadow:0 8px 24px rgba(0,0,0,0.5)!important;
-}
+  box-shadow:0 8px 24px rgba(0,0,0,0.5)!important;}
 .leaflet-popup-tip{background:#1a1820!important}
 .leaflet-popup-content{font-family:inherit!important;font-size:13px!important;margin:10px 14px!important;line-height:1.6}
-.leaflet-control-zoom a{
-  background:#1a1820!important;color:#00e0a4!important;
-  border-color:rgba(0,224,164,0.3)!important;
-}
-.leaflet-control-attribution{
-  background:rgba(10,10,15,0.85)!important;color:#a09a8a!important;font-size:9px!important;
-}
+.leaflet-control-zoom a{background:#1a1820!important;color:#00e0a4!important;border-color:rgba(0,224,164,0.3)!important;}
+.leaflet-control-attribution{background:rgba(10,10,15,0.85)!important;color:#a09a8a!important;font-size:9px!important;}
 .leaflet-control-attribution a{color:#00e0a4!important}
 .custom-marker-pulse{animation:markerPulse 2s ease-in-out infinite}
 @keyframes markerPulse{
@@ -358,6 +361,7 @@ select.field option{background:#0c0b10;color:#fff}
 [data-theme="light"] .leaflet-control-zoom a{background:#fff!important;color:#006644!important}
 [data-theme="light"] .leaflet-control-attribution{background:rgba(255,255,255,0.9)!important;color:#4a6055!important}
 
+/* ============ LIGHT THEME ============ */
 [data-theme="light"]{color-scheme:light}
 [data-theme="light"] body{background:#f0f5f2;color:#0a1410}
 [data-theme="light"] #app{background:radial-gradient(circle at 50% 0%,rgba(0,224,164,0.12) 0%,transparent 40%),#f0f5f2}
@@ -410,7 +414,6 @@ select.field option{background:#0c0b10;color:#fff}
 [data-theme="light"] .splash-tag{color:#4a6055}
 [data-theme="light"] .splash-line{background:linear-gradient(90deg,transparent,#00b884,transparent)}
 [data-theme="light"] .mini-btn{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.08);color:#0a1410}
-
 [data-theme="light"] #loginScreen{
   background:radial-gradient(circle at 50% 30%, rgba(0,224,164,0.3) 0%, transparent 55%),
     radial-gradient(circle at 50% 50%, #e6f2ec 0%, #f0f5f2 70%);
@@ -472,42 +475,16 @@ select.field option{background:#0c0b10;color:#fff}
     <section id="home" class="screen active">
       <div class="section-title">لوحة التحكم</div>
       <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon">⚡</div>
-          <div class="stat-value" id="statGens">0</div>
-          <div class="stat-label">مولدات</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">👥</div>
-          <div class="stat-value" id="statSubs">0</div>
-          <div class="stat-label">مشتركين</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">🔌</div>
-          <div class="stat-value" id="statAmps">0</div>
-          <div class="stat-label">إجمالي الأمبيرات</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-icon">💰</div>
-          <div class="stat-value gold" id="statRevenue">0</div>
-          <div class="stat-label">الإيراد الشهري (د.ع)</div>
-        </div>
+        <div class="stat-card"><div class="stat-icon">⚡</div><div class="stat-value" id="statGens">0</div><div class="stat-label">مولدات</div></div>
+        <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-value" id="statSubs">0</div><div class="stat-label">مشتركين</div></div>
+        <div class="stat-card"><div class="stat-icon">🔌</div><div class="stat-value" id="statAmps">0</div><div class="stat-label">إجمالي الأمبيرات</div></div>
+        <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-value gold" id="statRevenue">0</div><div class="stat-label">الإيراد الشهري (د.ع)</div></div>
       </div>
-
       <div class="section-title">إجراءات سريعة</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-        <button class="cta-ghost" style="margin-top:0;padding:20px 10px;font-size:13px;text-align:center" onclick="openGenModal()">
-          <div style="font-size:32px;margin-bottom:6px">⚡</div>
-          مولد
-        </button>
-        <button class="cta-ghost" style="margin-top:0;padding:20px 10px;font-size:13px;text-align:center" onclick="openSubModal()">
-          <div style="font-size:32px;margin-bottom:6px">👥</div>
-          مشترك
-        </button>
-        <button class="cta-ghost" style="margin-top:0;padding:20px 10px;font-size:13px;text-align:center" onclick="goScreen('calc')">
-          <div style="font-size:32px;margin-bottom:6px">🧮</div>
-          الحاسبة
-        </button>
+        <button class="cta-ghost" style="margin-top:0;padding:20px 10px;font-size:13px;text-align:center" onclick="openGenModal()"><div style="font-size:32px;margin-bottom:6px">⚡</div>مولد</button>
+        <button class="cta-ghost" style="margin-top:0;padding:20px 10px;font-size:13px;text-align:center" onclick="openSubModal()"><div style="font-size:32px;margin-bottom:6px">👥</div>مشترك</button>
+        <button class="cta-ghost" style="margin-top:0;padding:20px 10px;font-size:13px;text-align:center" onclick="goScreen('calc')"><div style="font-size:32px;margin-bottom:6px">🧮</div>الحاسبة</button>
       </div>
     </section>
 
@@ -532,7 +509,6 @@ select.field option{background:#0c0b10;color:#fff}
         <button class="tab gold" data-calc="sale" onclick="switchCalc('sale')">بيع تجاري</button>
         <button class="tab" data-calc="invoice" onclick="switchCalc('invoice')">فاتورة مشترك</button>
       </div>
-
       <div id="calcSub" class="calc-panel">
         <div class="formbox">
           <label>عدد الأمبيرات (A)</label>
@@ -550,7 +526,6 @@ select.field option{background:#0c0b10;color:#fff}
           <div class="calc-breakdown" id="calcSubBreak"></div>
         </div>
       </div>
-
       <div id="calcSale" class="calc-panel hidden">
         <div class="formbox">
           <label>سعر الشراء (الجملة) د.ع</label>
@@ -566,13 +541,10 @@ select.field option{background:#0c0b10;color:#fff}
           <div class="calc-breakdown" id="calcSaleBreak"></div>
         </div>
       </div>
-
       <div id="calcInvoice" class="calc-panel hidden">
         <div class="formbox">
           <label>اختر مشترك (اختياري)</label>
-          <select class="field" id="invSub" onchange="fillInvoiceFromSub()">
-            <option value="">— بدون —</option>
-          </select>
+          <select class="field" id="invSub" onchange="fillInvoiceFromSub()"><option value="">— بدون —</option></select>
           <label>عدد الأمبيرات</label>
           <input class="field" id="invAmps" type="number" inputmode="decimal" min="0" step="any" placeholder="0" oninput="calcInvoice()">
           <label>سعر الأمبير</label>
@@ -601,7 +573,6 @@ select.field option{background:#0c0b10;color:#fff}
 /* ============ HELPERS ============ */
 const $ = id => document.getElementById(id);
 const fmt = n => { const x = Number(n); return isFinite(x) ? x.toLocaleString('en-US') : '0'; };
-/* رقم آمن: يحوّل أي قيمة لرقم أو 0 عند NaN/undefined/null */
 const num = v => { const n = Number(v); return isFinite(n) ? n : 0; };
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const haptic = () => { if (navigator.vibrate) try { navigator.vibrate(15); } catch(e){} };
@@ -647,6 +618,13 @@ function applyTheme(t){
     if (btn.title && btn.title.includes('الوضع')) btn.textContent = t === 'dark' ? '☀️' : '🌙';
   });
   try { localStorage.setItem(THEME_KEY, t); } catch(e){}
+  /* Capacitor StatusBar */
+  try {
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.StatusBar){
+      window.Capacitor.Plugins.StatusBar.setStyle({ style: t === 'dark' ? 'DARK' : 'LIGHT' });
+      window.Capacitor.Plugins.StatusBar.setBackgroundColor({ color: t === 'dark' ? '#050507' : '#f0f5f2' });
+    }
+  } catch(e){}
 }
 function toggleTheme(){
   const cur = document.documentElement.getAttribute('data-theme') || 'dark';
@@ -657,9 +635,7 @@ applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
 
 /* ============ AUTH ============ */
 const USER_KEY = 'ampere_user_email';
-function getCurrentUser(){
-  try { return localStorage.getItem(USER_KEY) || ''; } catch(e){ return ''; }
-}
+function getCurrentUser(){ try { return localStorage.getItem(USER_KEY) || ''; } catch(e){ return ''; } }
 function showLoginError(msg){
   const errEl = $('loginError');
   if (!errEl) return;
@@ -685,15 +661,14 @@ function doLogin(){
   }, 380);
 }
 function enterApp(showWelcome){
+  seedIfNeeded();
   $('app').classList.remove('hidden');
   renderNav();
-  renderHome();
   goScreen('home');
-  seedIfNeeded();
   if (showWelcome){
     const email = getCurrentUser();
     const name = email ? email.split('@')[0] : '';
-    toast('👋 مرحباً بك' + (name ? ' ' + name : ''), 'success');
+    setTimeout(() => toast('👋 مرحباً بك' + (name ? ' ' + name : ''), 'success'), 300);
   }
 }
 function logout(){
@@ -788,11 +763,9 @@ function renderHome(){
   const subs = getSubscribers();
   $('statGens').textContent = gens.length;
   $('statSubs').textContent = subs.length;
-
   let revenue = 0, totalAmps = 0;
   subs.forEach(s => {
     const g = gens.find(x => x.id === s.generatorId);
-    /* ✅ إصلاح: أولوية لسعر المولد، ثم سعر المشترك، ثم 0 — بدون NaN */
     const price = g ? num(g.pricePerAmp) : num(s.pricePerAmp);
     revenue += num(s.amps) * price;
     totalAmps += num(s.amps);
@@ -909,35 +882,21 @@ function renderSubscribers(){
   const gens = getGenerators();
   el.innerHTML = list.map(s => {
     const g = gens.find(x => x.id === s.generatorId);
-    /* ✅ إصلاح: بدون NaN */
     const monthly = num(s.amps) * (g ? num(g.pricePerAmp) : num(s.pricePerAmp));
     const info = subDaysInfo(s);
-
     let cls = 'ok', label;
-    if (info.expired){
-      cls = 'warn';
-      label = `⚠️ انتهى منذ ${Math.abs(info.left)} يوم`;
-    } else if (info.left <= 5){
-      cls = 'warn';
-      label = `⏱ متبقي ${info.left} يوم`;
-    } else if (info.left <= 10){
-      cls = 'near';
-      label = `⏱ متبقي ${info.left} يوم`;
-    } else {
-      cls = 'ok';
-      label = `⏱ متبقي ${info.left} يوم`;
-    }
-
+    if (info.expired){ cls = 'warn'; label = `⚠️ انتهى منذ ${Math.abs(info.left)} يوم`; }
+    else if (info.left <= 5){ cls = 'warn'; label = `⏱ متبقي ${info.left} يوم`; }
+    else if (info.left <= 10){ cls = 'near'; label = `⏱ متبقي ${info.left} يوم`; }
+    else { cls = 'ok'; label = `⏱ متبقي ${info.left} يوم`; }
     const parts1 = [];
     if (s.location) parts1.push('📍 ' + esc(s.location));
     parts1.push(s.phone ? '📞 ' + esc(s.phone) : 'بدون رقم');
     if (g) parts1.push('⚡ ' + esc(g.name));
-
     const hasLocation = s.lat != null && s.lng != null;
     const locationBtn = hasLocation
-      ? `<button class="mini-btn gold" style="flex:0;padding:8px 12px;width:auto" onclick="openMapModal('${s.id}')" title="عرض الموقع على الخريطة">🗺️</button>`
+      ? `<button class="mini-btn gold" style="flex:0;padding:8px 12px;width:auto" onclick="openMapModal('${s.id}')" title="عرض الموقع">🗺️</button>`
       : '';
-
     return `<div class="sub-card">
       <div class="sub-avatar">${esc((s.name || '?').charAt(0))}</div>
       <div class="sub-info">
@@ -948,12 +907,10 @@ function renderSubscribers(){
       <div class="sub-amps">${fmt(s.amps)} A<small>أمبير</small></div>
       <div style="display:flex;gap:4px;flex-shrink:0">
         <button class="mini-btn" style="flex:0;padding:6px 8px;width:auto" onclick="openSubModal(null,'${s.id}')" title="تعديل">✎</button>
-        <button class="mini-btn danger" style="flex:0;padding:6px 8px;width:auto" onclick="confirmDeleteSub('${s.id}')" title="حذف المشترك">🗑️</button>
+        <button class="mini-btn danger" style="flex:0;padding:6px 8px;width:auto" onclick="confirmDeleteSub('${s.id}')" title="حذف">🗑️</button>
       </div>
       <div class="days-row">
-        <div class="days-badge ${cls}">
-          ${label} <small>• بدأ ${formatDate(info.start)}</small>
-        </div>
+        <div class="days-badge ${cls}">${label} <small>• بدأ ${formatDate(info.start)}</small></div>
         <button class="mini-btn primary" style="flex:0;padding:8px 12px;width:auto;white-space:nowrap" onclick="renewSub('${s.id}')">🔄 تجديد</button>
         ${locationBtn}
       </div>
@@ -977,7 +934,6 @@ function confirmDeleteSub(id){
   const gens = getGenerators();
   const gen = sub.generatorId ? gens.find(g => g.id === sub.generatorId) : null;
   const monthly = num(sub.amps) * (gen ? num(gen.pricePerAmp) : num(sub.pricePerAmp));
-
   openModal('⚠️ حذف المشترك', `
     <div style="text-align:center;padding:10px 0 4px">
       <div style="width:76px;height:76px;margin:0 auto 14px;border-radius:50%;
@@ -992,18 +948,9 @@ function confirmDeleteSub(id){
     </div>
     <div style="margin-top:16px;padding:14px;background:rgba(255,77,109,0.08);
       border:1px solid rgba(255,77,109,0.25);border-radius:14px;font-size:12px;color:#ff4d6d;line-height:1.9">
-      <div style="display:flex;justify-content:space-between">
-        <span>⚡ الأمبيرات المحرّرة:</span>
-        <b style="color:#fff">${fmt(sub.amps)} A</b>
-      </div>
-      <div style="display:flex;justify-content:space-between">
-        <span>💰 الإيراد المفقود شهرياً:</span>
-        <b style="color:#fff">${fmt(Math.round(monthly))} د.ع</b>
-      </div>
-      ${gen ? `<div style="display:flex;justify-content:space-between">
-        <span>🔌 المولد المرتبط:</span>
-        <b style="color:#fff">${esc(gen.name)}</b>
-      </div>` : ''}
+      <div style="display:flex;justify-content:space-between"><span>⚡ الأمبيرات المحرّرة:</span><b style="color:#fff">${fmt(sub.amps)} A</b></div>
+      <div style="display:flex;justify-content:space-between"><span>💰 الإيراد المفقود شهرياً:</span><b style="color:#fff">${fmt(Math.round(monthly))} د.ع</b></div>
+      ${gen ? `<div style="display:flex;justify-content:space-between"><span>🔌 المولد المرتبط:</span><b style="color:#fff">${esc(gen.name)}</b></div>` : ''}
     </div>
     <div class="modal-actions">
       <button class="cta-ghost" style="margin-top:0" onclick="closeModal()">إلغاء</button>
@@ -1032,12 +979,11 @@ function openSubModal(presetGenId, subId){
   const latVal = sub && sub.lat != null ? sub.lat : '';
   const lngVal = sub && sub.lng != null ? sub.lng : '';
   const hasLoc = latVal !== '' && lngVal !== '';
-
   openModal(sub ? 'تعديل مشترك' : 'إضافة مشترك', `
     <label>اسم المشترك *</label>
     <input class="field" id="mSubName" placeholder="الاسم الكامل" value="${esc(sub?.name || '')}">
     <label>رقم الهاتف</label>
-    <input class="field" id="mSubPhone" type="tel" placeholder="07XXXXXXXXX" value="${esc(sub?.phone || '')}">
+    <input class="field" id="mSubPhone" type="tel" inputmode="tel" placeholder="07XXXXXXXXX" value="${esc(sub?.phone || '')}">
     <label>الموقع / العنوان</label>
     <input class="field" id="mSubLoc" placeholder="مثلاً: الكرادة - شارع 62" value="${esc(sub?.location || '')}">
     <label>المولد التابع له</label>
@@ -1055,8 +1001,8 @@ function openSubModal(presetGenId, subId){
       <button type="button" class="cta-ghost" style="margin-top:0;padding:12px;flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px" onclick="clearLocation()" title="مسح الموقع">✕</button>
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-      <input class="field" id="mSubLat" type="number" step="any" inputmode="decimal" placeholder="خط العرض (lat)" value="${latVal}">
-      <input class="field" id="mSubLng" type="number" step="any" inputmode="decimal" placeholder="خط الطول (lng)" value="${lngVal}">
+      <input class="field" id="mSubLat" type="number" step="any" inputmode="decimal" placeholder="خط العرض" value="${latVal}">
+      <input class="field" id="mSubLng" type="number" step="any" inputmode="decimal" placeholder="خط الطول" value="${lngVal}">
     </div>
     <div id="mapHint" style="font-size:10.5px;color:#6a6659;margin-top:6px;text-align:center">
       ${hasLoc ? '✅ الموقع محدد — سيظهر زر 🗺️ في بطاقة المشترك' : '💡 اضغط "تحديد موقعي" أو أدخل الإحداثيات يدوياً'}
@@ -1069,9 +1015,7 @@ function openSubModal(presetGenId, subId){
     </div>
     ${sub ? `
       <div class="divider"></div>
-      <button class="cta-ghost cta-danger" style="margin-top:0" onclick="confirmDeleteSub('${subId}')">
-        🗑️ حذف المشترك نهائياً
-      </button>
+      <button class="cta-ghost cta-danger" style="margin-top:0" onclick="confirmDeleteSub('${subId}')">🗑️ حذف المشترك نهائياً</button>
     ` : ''}
   `);
 }
@@ -1082,12 +1026,10 @@ function saveSub(id){
   if (!name){ toast('اسم المشترك مطلوب', 'error'); return; }
   if (amps <= 0){ toast('أدخل عدد الأمبيرات', 'error'); return; }
   const existing = id ? getSubscribers().find(s => s.id === id) : null;
-
   const latRaw = $('mSubLat')?.value;
   const lngRaw = $('mSubLng')?.value;
   const lat = (latRaw !== '' && latRaw != null && !isNaN(Number(latRaw))) ? Number(latRaw) : null;
   const lng = (lngRaw !== '' && lngRaw != null && !isNaN(Number(lngRaw))) ? Number(lngRaw) : null;
-
   const data = {
     id: id || uid(),
     name,
@@ -1130,7 +1072,7 @@ function captureLocation(btn){
     (err) => {
       btn.textContent = orig; btn.disabled = false;
       let msg = 'تعذر تحديد الموقع';
-      if (err.code === 1) msg = 'تم رفض الإذن — فعّل GPS من إعدادات المتصفح';
+      if (err.code === 1) msg = 'تم رفض الإذن — فعّل GPS من إعدادات التطبيق';
       else if (err.code === 2) msg = 'الموقع غير متوفر — تحقق من GPS';
       else if (err.code === 3) msg = 'انتهت مهلة تحديد الموقع';
       toast(msg, 'error');
@@ -1174,7 +1116,6 @@ function openMapModal(subId){
   if (sub.lat == null || sub.lng == null){ toast('لا يوجد موقع محفوظ لهذا المشترك', 'error'); return; }
   const gens = getGenerators();
   const gen = sub.generatorId ? gens.find(g => g.id === sub.generatorId) : null;
-
   openModal('🗺️ موقع المشترك', `
     <div style="margin-bottom:12px">
       <div style="font-size:18px;font-weight:900;color:var(--primary)">${esc(sub.name)}</div>
@@ -1190,7 +1131,6 @@ function openMapModal(subId){
       <button class="cta-primary" style="margin-top:0" onclick="closeModal()">إغلاق</button>
     </div>
   `);
-
   setTimeout(() => {
     const mapEl = document.getElementById('mapContainer');
     if (!mapEl) return;
@@ -1223,21 +1163,18 @@ function openMapModal(subId){
   }, 120);
 }
 
-/* ============ CALCULATOR (المصحّح) ============ */
+/* ============ CALCULATOR ============ */
 let currentCalc = 'sub';
-
 function switchCalc(tab){
   currentCalc = tab;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.calc === tab));
   document.querySelectorAll('.calc-panel').forEach(p => p.classList.add('hidden'));
   const panel = $('calc' + tab.charAt(0).toUpperCase() + tab.slice(1));
   if (panel) panel.classList.remove('hidden');
-  /* ✅ إعادة حساب عند الرجوع للتبويب لضمان صحة النتائج */
   if (tab === 'sub') calcSub();
   if (tab === 'sale') calcSale();
   if (tab === 'invoice'){ initCalcSelects(); calcInvoice(); }
 }
-
 function initCalcSelects(){
   const sel = $('invSub');
   if (!sel) return;
@@ -1246,13 +1183,11 @@ function initCalcSelects(){
   const cur = sel.value;
   sel.innerHTML = '<option value="">— بدون —</option>' + subs.map(s => {
     const g = gens.find(x => x.id === s.generatorId);
-    /* ✅ بدون NaN */
     const price = g ? num(g.pricePerAmp) : num(s.pricePerAmp);
     return `<option value="${s.id}" data-amps="${num(s.amps)}" data-price="${price}">${esc(s.name)} — ${fmt(s.amps)}A</option>`;
   }).join('');
   if (cur) sel.value = cur;
 }
-
 function fillInvoiceFromSub(){
   const sel = $('invSub');
   const opt = sel.options[sel.selectedIndex];
@@ -1261,32 +1196,20 @@ function fillInvoiceFromSub(){
   $('invPrice').value = opt.dataset.price || '';
   calcInvoice();
 }
-
-/* -------- حاسبة اشتراك المولد (المصحّحة) -------- */
 function calcSub(){
-  const amps    = num($('calcAmps').value);
-  const price   = num($('calcPrice').value);
-  let   months  = Math.max(1, Math.floor(num($('calcMonths').value) || 1));
-  let   disc    = num($('calcDiscount').value);
-
-  /* ✅ حدّ أعلى/أدنى للخصم */
+  const amps = num($('calcAmps').value);
+  const price = num($('calcPrice').value);
+  const months = Math.max(1, Math.floor(num($('calcMonths').value) || 1));
+  let disc = num($('calcDiscount').value);
   if (disc < 0) disc = 0;
   if (disc > 100) disc = 100;
-
-  if (amps <= 0 || price <= 0){
-    $('calcSubResult').style.display = 'none';
-    return;
-  }
-
-  const monthly   = amps * price;                 // إجمالي الشهر
-  const subtotal  = monthly * months;             // قبل الخصم
-  const discountAmt = subtotal * (disc / 100);    // قيمة الخصم
-  const total     = subtotal - discountAmt;       // الإجمالي النهائي
-
+  if (amps <= 0 || price <= 0){ $('calcSubResult').style.display = 'none'; return; }
+  const monthly = amps * price;
+  const subtotal = monthly * months;
+  const discountAmt = subtotal * (disc / 100);
+  const total = subtotal - discountAmt;
   $('calcSubResult').style.display = 'block';
   $('calcSubTotal').innerHTML = fmt(Math.round(total)) + ' <small>د.ع</small>';
-
-  /* ✅ breakdown يعرض المعادلة الكاملة بوضوح */
   $('calcSubBreak').innerHTML = `
     <div class="row"><span>${fmt(amps)} A × ${fmt(price)} د.ع</span><b>${fmt(Math.round(monthly))} د.ع/شهر</b></div>
     <div class="row"><span>× ${months} شهر</span><b>${fmt(Math.round(subtotal))} د.ع</b></div>
@@ -1294,19 +1217,12 @@ function calcSub(){
     <div class="row total"><span>الإجمالي النهائي</span><b>${fmt(Math.round(total))} د.ع</b></div>
   `;
 }
-
-/* -------- حاسبة البيع التجاري -------- */
 function calcSale(){
-  const cost   = num($('saleCost').value);
+  const cost = num($('saleCost').value);
   const margin = num($('saleMargin').value);
-
-  if (cost <= 0 || margin < 0){
-    $('calcSaleResult').style.display = 'none';
-    return;
-  }
+  if (cost <= 0 || margin < 0){ $('calcSaleResult').style.display = 'none'; return; }
   const profit = cost * margin / 100;
-  const total  = cost + profit;
-
+  const total = cost + profit;
   $('calcSaleResult').style.display = 'block';
   $('calcSaleTotal').innerHTML = fmt(Math.round(total)) + ' <small>د.ع</small>';
   $('calcSaleBreak').innerHTML = `
@@ -1315,16 +1231,13 @@ function calcSale(){
     <div class="row total"><span>سعر البيع المقترح</span><b>${fmt(Math.round(total))} د.ع</b></div>
   `;
 }
-
 function calcSaleReverse(){
-  const cost  = num($('saleCost').value);
+  const cost = num($('saleCost').value);
   const price = num($('salePrice').value);
   if (cost <= 0 || price <= 0) return;
-
   const profit = price - cost;
   const margin = (profit / cost) * 100;
   $('saleMargin').value = Math.round(margin * 100) / 100;
-
   $('calcSaleResult').style.display = 'block';
   $('calcSaleTotal').innerHTML = fmt(Math.round(price)) + ' <small>د.ع</small>';
   $('calcSaleBreak').innerHTML = `
@@ -1333,23 +1246,15 @@ function calcSaleReverse(){
     <div class="row total"><span>الربح</span><b style="color:#ffd24a">${fmt(Math.round(profit))} د.ع (${margin.toFixed(1)}%)</b></div>
   `;
 }
-
-/* -------- حاسبة فاتورة المشترك (المصحّحة) -------- */
 function calcInvoice(){
-  const amps   = num($('invAmps').value);
-  const price  = num($('invPrice').value);
-  let   months = Math.max(1, Math.floor(num($('invMonths').value) || 1));
-  const extra  = num($('invExtra').value);
-
-  if (amps <= 0 || price <= 0){
-    $('calcInvResult').style.display = 'none';
-    return;
-  }
-
-  const monthly  = amps * price;
+  const amps = num($('invAmps').value);
+  const price = num($('invPrice').value);
+  const months = Math.max(1, Math.floor(num($('invMonths').value) || 1));
+  const extra = num($('invExtra').value);
+  if (amps <= 0 || price <= 0){ $('calcInvResult').style.display = 'none'; return; }
+  const monthly = amps * price;
   const subtotal = monthly * months;
-  const total    = subtotal + extra;
-
+  const total = subtotal + extra;
   $('calcInvResult').style.display = 'block';
   $('calcInvTotal').innerHTML = fmt(Math.round(total)) + ' <small>د.ع</small>';
   $('calcInvBreak').innerHTML = `
@@ -1378,6 +1283,7 @@ function closeModal(){
   if (mapInstance){ try { mapInstance.remove(); } catch(e){} mapInstance = null; }
   $('modalRoot').innerHTML = '';
 }
+function isModalOpen(){ return $('modalRoot').innerHTML.trim() !== ''; }
 
 /* ============ RENDER ALL ============ */
 function renderAll(){
@@ -1398,18 +1304,61 @@ function seedIfNeeded(){
   }
 }
 
+/* ============ ANDROID BACK BUTTON ============ */
+let lastBackPress = 0;
+function handleBackButton(){
+  if (isModalOpen()){ closeModal(); return; }
+  if (currentScreen !== 'home'){ goScreen('home'); return; }
+  const t = Date.now();
+  if (t - lastBackPress < 2000){
+    exitApp();
+  } else {
+    lastBackPress = t;
+    toast('اضغط مرة أخرى للخروج', 'gold');
+  }
+}
+function exitApp(){
+  try {
+    if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App){
+      window.Capacitor.Plugins.App.exitApp();
+      return;
+    }
+  } catch(e){}
+  try { if (navigator.app && navigator.app.exitApp){ navigator.app.exitApp(); return; } } catch(e){}
+  try { window.history.back(); } catch(e){}
+}
+
+/* Capacitor: زر الرجوع */
+if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.App){
+  try {
+    window.Capacitor.Plugins.App.addListener('backButton', () => { handleBackButton(); });
+  } catch(e){}
+}
+/* Cordova: زر الرجوع */
+document.addEventListener('backbutton', (e) => { e.preventDefault(); handleBackButton(); }, false);
+
+/* ============ KEYBOARD HANDLING ============ */
+document.addEventListener('focusin', (e) => {
+  if (e.target.matches('input, textarea, select')){
+    setTimeout(() => {
+      try { e.target.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch(err){}
+    }, 300);
+  }
+});
+
 /* ============ INIT ============ */
 function init(){
+  const hasUser = !!getCurrentUser();
+  const delay = hasUser ? 1600 : 3400;
   setTimeout(() => {
     $('splash').classList.add('done');
-    const user = getCurrentUser();
-    if (user){
+    if (hasUser){
       enterApp(false);
     } else {
       $('loginScreen').classList.remove('hidden');
       setTimeout(() => { const inp = $('loginEmail'); if (inp) inp.focus(); }, 300);
     }
-  }, 3400);
+  }, delay);
 }
 init();
 
