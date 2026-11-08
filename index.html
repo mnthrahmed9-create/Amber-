@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#050507">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>أمبير — إدارة المولدات الأهلية</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="light"]{color-scheme:light}
+body{
+  background:#050507;color:#fff;
+  font-family:-apple-system,'SF Arabic','Segoe UI',Tahoma,Arial,sans-serif;
+  min-height:100vh;overflow-x:hidden;user-select:none;
+  transition:background .3s,color .3s;
+}
+input,textarea,select{user-select:text;font-family:inherit}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+:root{
+  --primary:#00e0a4;--primary-2:#00b884;--primary-3:#006644;
+  --gold:#ffd24a;--gold-2:#ffb800;--gold-3:#8a6200;
+  --border:rgba(0,224,164,0.18);
+  --radius:20px;
+  --success:#00e0a4;--danger:#ff4d6d;--warning:#ffaa33;--info:#4ea1ff;
+}
+.hidden{display:none!important}
+
+/* ============ SPLASH ============ */
+#splash{
+  position:fixed;inset:0;z-index:9999;
+  background:radial-gradient(circle at 50% 45%, rgba(0,224,164,0.18) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, #0a1410 0%, #050507 70%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;transition:opacity .8s,visibility .8s;
+}
+#splash.done{opacity:0;visibility:hidden}
+.splash-orb{position:absolute;width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,224,164,0.22) 0%,transparent 65%);
+  filter:blur(30px);animation:orbPulse 3s ease-in-out infinite;}
+@keyframes orbPulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.2);opacity:1}}
+.splash-bolt{position:relative;z-index:2;font-size:90px;
+  filter:drop-shadow(0 0 40px rgba(0,224,164,0.8));
+  animation:boltFloat 2.5s ease-in-out infinite;}
+@keyframes boltFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-12px) scale(1.05)}}
+.splash-logo{position:relative;z-index:2;font-size:clamp(48px,15vw,72px);font-weight:900;letter-spacing:4px;
+  background:linear-gradient(90deg,#006644,#00e0a4,#b8fff0,#00e0a4,#006644);background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+  filter:drop-shadow(0 0 30px rgba(0,224,164,0.6));
+  animation:logoReveal 1.6s cubic-bezier(.2,.9,.2,1) forwards,shimmer 3s linear 1s infinite;
+  transform:scale(.3) rotateX(40deg);opacity:0;}
+@keyframes logoReveal{to{transform:scale(1) rotateX(0);opacity:1}}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+.splash-sub{position:relative;z-index:2;margin-top:6px;font-size:15px;letter-spacing:2px;color:#00e0a4;font-weight:700;
+  animation:fadeInUp .8s ease 1.4s forwards;opacity:0;}
+.splash-line{position:relative;z-index:2;margin-top:24px;width:120px;height:2px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,#00e0a4,transparent);
+  animation:lineGrow 1.2s ease 1.8s forwards;opacity:0;transform:scaleX(0);}
+@keyframes lineGrow{to{transform:scaleX(1);opacity:1}}
+.splash-tag{position:relative;z-index:2;margin-top:18px;font-size:12px;color:#a09a8a;letter-spacing:2px;
+  animation:fadeInUp .8s ease 2.2s forwards;opacity:0;}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.splash-progress{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);
+  width:160px;height:3px;border-radius:3px;background:rgba(0,224,164,0.12);overflow:hidden;
+  animation:fadeInUp .6s ease 1s forwards;opacity:0;}
+.splash-progress::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,#006644,#00e0a4,#b8fff0);border-radius:3px;
+  animation:progressFill 2.4s cubic-bezier(.6,.05,.3,.95) forwards;transform-origin:right;transform:scaleX(0);}
+@keyframes progressFill{to{transform:scaleX(1)}}
+
+/* ============ AUTH ============ */
+#authScreen{
+  position:fixed;inset:0;z-index:500;overflow-y:auto;
+  background:radial-gradient(circle at 50% 15%, rgba(0,224,164,0.18) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, #0a1410 0%, #050507 80%);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px 20px;
+  animation:authIn .5s ease;
+}
+@keyframes authIn{from{opacity:0}to{opacity:1}}
+.auth-theme{position:fixed;top:16px;right:16px;z-index:10}
+.auth-wrap{width:100%;max-width:400px;text-align:center;padding:10px 0}
+.auth-logo{font-size:64px;line-height:1;margin-bottom:4px;
+  filter:drop-shadow(0 0 30px rgba(0,224,164,0.7));
+  animation:boltFloat 2.5s ease-in-out infinite;display:inline-block}
+.auth-brand{font-size:44px;font-weight:900;letter-spacing:4px;margin:2px 0 4px;
+  background:linear-gradient(90deg,#006644,#00e0a4,#b8fff0,#00e0a4,#006644);background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:shimmer 3s linear infinite;}
+.auth-tagline{font-size:13px;color:#00e0a4;font-weight:800;letter-spacing:2px;margin-bottom:26px}
+.auth-tabs{display:flex;gap:6px;background:#0c0b10;border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;padding:4px;margin-bottom:16px;}
+.auth-tab{flex:1;padding:12px;border-radius:12px;color:#a09a8a;font-size:13px;font-weight:900;transition:all .2s}
+.auth-tab.active{background:linear-gradient(180deg,rgba(0,224,164,0.2),rgba(0,224,164,0.05));color:var(--primary)}
+.auth-err{min-height:20px;font-size:12px;color:#ff4d6d;font-weight:800;text-align:center;margin-top:8px}
+.auth-hint{font-size:11px;color:#6a6659;text-align:center;margin-top:14px;line-height:1.6}
+.auth-panel{animation:panelIn .3s ease}
+@keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+[data-theme="light"] #authScreen{background:radial-gradient(circle at 50% 15%, rgba(0,224,164,0.22) 0%, transparent 50%),radial-gradient(circle at 50% 50%, #e6f2ec 0%, #f0f5f2 80%)}
+[data-theme="light"] .auth-tabs{background:#e6f2ec;border-color:rgba(0,0,0,0.08)}
+[data-theme="light"] .auth-tab{color:#4a6055}
+[data-theme="light"] .auth-tab.active{background:linear-gradient(180deg,rgba(0,224,164,0.3),rgba(0,224,164,0.1));color:#006644}
+[data-theme="light"] .auth-hint{color:#4a6055}
+
+/* ============ APP ============ */
+#app{max-width:520px;min-height:100vh;margin:0 auto;position:relative;
+  background:radial-gradient(circle at 50% 0%, rgba(0,224,164,0.06) 0%, transparent 40%),#050507;
+  overflow:hidden;}
+.top{position:sticky;top:0;z-index:100;min-height:64px;
+  display:flex;align-items:center;justify-content:space-between;padding:10px 12px;gap:8px;
+  background:linear-gradient(180deg,#0a0a0f 0%,rgba(10,10,15,0.92) 100%);
+  backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,224,164,0.10);}
+.brand-small{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;cursor:pointer}
+.brand-mini{font-size:20px;font-weight:900;letter-spacing:2px;
+  background:linear-gradient(90deg,#006644,#00e0a4,#b8fff0,#00e0a4,#006644);background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+  animation:shimmer 3s linear infinite;}
+.brand-sub{font-size:10px;color:#00e0a4;font-weight:700;opacity:.9}
+.theme-btn{width:42px;height:42px;border-radius:13px;
+  background:linear-gradient(160deg,#1a1820,#0c0b10);
+  border:1px solid rgba(255,255,255,0.10);font-size:20px;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .2s,background .3s,border-color .3s;}
+.theme-btn:active{transform:scale(.92) rotate(20deg)}
+.user-btn{background:linear-gradient(160deg,#00e0a4,#006644)!important;color:#042018!important;
+  font-weight:900!important;font-size:16px!important;border:1px solid rgba(0,224,164,0.5)!important;
+  font-family:inherit}
+.user-btn:active{transform:scale(.92)!important}
+
+.screen{display:none;padding:16px 16px 100px;animation:screenIn .35s}
+.screen.active{display:block}
+@keyframes screenIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.section-title{font-size:18px;font-weight:900;margin:14px 0 10px;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:4px;height:18px;border-radius:4px;background:linear-gradient(180deg,#00e0a4,#006644)}
+.muted{color:#a09a8a;font-size:13px;line-height:1.7}
+
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:min(520px,100%);height:72px;z-index:500;
+  background:linear-gradient(0deg,#0a0a0f 0%,rgba(10,10,15,0.96) 100%);
+  backdrop-filter:blur(20px);border-top:1px solid rgba(0,224,164,0.10);
+  display:flex;justify-content:space-around;align-items:center;padding:0 6px;}
+.nav{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  color:#6a6659;font-size:10px;font-weight:700;padding:8px 4px;border-radius:14px;
+  transition:color .2s,background .2s;position:relative;}
+.nav b{font-size:20px;line-height:1;font-weight:400}
+.nav.active{color:var(--primary);background:rgba(0,224,164,0.06)}
+.nav.active::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:24px;height:2px;border-radius:2px;background:var(--primary);box-shadow:0 0 10px var(--primary);}
+
+.cta-primary{width:100%;padding:16px;margin-top:16px;border-radius:18px;
+  font-size:16px;font-weight:900;
+  background:linear-gradient(180deg,#00ffc0 0%,#00e0a4 45%,#00b884 100%);
+  color:#042018;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.5),0 6px 0 #006644,0 16px 30px -10px rgba(0,224,164,0.45);
+  transition:transform .1s;}
+.cta-primary:active{transform:translateY(4px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 2px 0 #006644}
+.cta-gold{background:linear-gradient(180deg,#ffe36b,#ffc400 45%,#d99a00);color:#17120a;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.5),0 6px 0 #8a6200,0 16px 30px -10px rgba(255,196,0,0.45);}
+.cta-gold:active{box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 2px 0 #8a6200}
+.cta-ghost{width:100%;padding:14px;margin-top:10px;
+  background:linear-gradient(160deg,#1a1820,#0c0b10);
+  border:1px solid rgba(255,255,255,0.10);
+  color:#e8e3d4;font-weight:700;font-size:14px;border-radius:16px;
+  transition:transform .1s;}
+.cta-ghost:active{transform:scale(.97)}
+.cta-danger{background:rgba(255,77,109,0.12);color:#ff4d6d;border:1px solid rgba(255,77,109,0.3)}
+.cta-danger-solid{background:linear-gradient(180deg,#ff8da1,#ff4d6d 50%,#d63350);color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.4),0 6px 0 #8a0030,0 16px 30px -10px rgba(255,77,109,0.5)}
+
+.field{width:100%;padding:14px 16px;margin-top:8px;
+  background:#0c0b10;border:1px solid rgba(255,255,255,0.09);
+  border-radius:14px;color:#fff;font-size:14px;outline:none;
+  transition:border-color .2s;}
+.field::placeholder{color:#5a554a}
+.field:focus{border-color:rgba(0,224,164,0.55);box-shadow:0 0 0 3px rgba(0,224,164,0.10)}
+label{display:block;font-size:12px;color:#a09a8a;font-weight:700;margin-top:12px}
+label:first-child{margin-top:0}
+.formbox{background:linear-gradient(160deg,#14121a 0%,#0a090f 100%);
+  border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+
+/* Cards */
+.card{background:linear-gradient(160deg,#14121a 0%,#0a090f 100%);
+  border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;
+  transition:border-color .2s;}
+.card.gold{border-color:rgba(255,196,0,0.25)}
+.card:active{transform:scale(.995)}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-card{padding:16px 12px;text-align:center;
+  background:linear-gradient(160deg,#14121a 0%,#0a090f 100%);
+  border:1px solid var(--border);border-radius:var(--radius);}
+.stat-icon{font-size:26px;margin-bottom:6px}
+.stat-value{font-size:22px;font-weight:900;color:var(--primary);line-height:1.1}
+.stat-value.gold{color:var(--gold)}
+.stat-value.danger{color:var(--danger)}
+.stat-label{font-size:10.5px;color:#a09a8a;margin-top:4px;font-weight:700}
+
+/* Generator card */
+.gen-card{padding:16px;margin-bottom:12px;border-radius:var(--radius);
+  background:linear-gradient(160deg,#141a16 0%,#0a0f0c 100%);
+  border:1px solid rgba(0,224,164,0.22);position:relative;overflow:hidden;}
+.gen-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;
+  background:radial-gradient(circle,rgba(0,224,164,0.15) 0%,transparent 70%);
+  border-radius:50%;transform:translate(20px,-20px);}
+.gen-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.gen-name{font-size:16px;font-weight:900;color:#fff;display:flex;align-items:center;gap:6px}
+.gen-meta{font-size:11px;color:#a09a8a;margin-top:3px}
+.gen-badge{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:900;
+  background:rgba(0,224,164,0.15);color:#00e0a4;border:1px solid rgba(0,224,164,0.35);}
+.gen-rows{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.gen-row{padding:8px 10px;border-radius:10px;background:rgba(0,0,0,0.3);
+  border:1px solid rgba(255,255,255,0.05);font-size:11px;}
+.gen-row b{display:block;color:#00e0a4;font-size:14px;font-weight:900;margin-top:2px}
+
+/* Subscriber */
+.sub-card{padding:14px;margin-bottom:10px;border-radius:16px;
+  background:linear-gradient(160deg,#14121a 0%,#0a090f 100%);
+  border:1px solid rgba(255,255,255,0.08);display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+.sub-avatar{width:48px;height:48px;border-radius:14px;flex-shrink:0;
+  background:linear-gradient(160deg,#00e0a4,#006644);color:#042018;
+  display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;}
+.sub-info{flex:1;min-width:0}
+.sub-name{font-size:14px;font-weight:900;color:#fff}
+.sub-detail{font-size:11px;color:#a09a8a;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sub-amps{font-size:15px;font-weight:900;color:var(--gold);white-space:nowrap;text-align:left}
+.sub-amps small{display:block;font-size:9px;color:#a09a8a;font-weight:700}
+
+/* Days counter */
+.days-row{flex-basis:100%;display:flex;gap:8px;margin-top:6px;align-items:stretch}
+.days-badge{flex:1;padding:8px 12px;border-radius:10px;font-size:11px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;gap:6px;text-align:center;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.days-badge small{color:#a09a8a;font-weight:700;font-size:10px}
+.days-badge.ok{color:#00e0a4;background:rgba(0,224,164,0.12);border:1px solid rgba(0,224,164,0.3)}
+.days-badge.near{color:#ffd24a;background:rgba(255,196,0,0.12);border:1px solid rgba(255,196,0,0.3)}
+.days-badge.warn{color:#ff4d6d;background:rgba(255,77,109,0.12);border:1px solid rgba(255,77,109,0.3)}
+[data-theme="light"] .days-badge.ok{color:#006644;background:rgba(0,180,132,0.12)}
+[data-theme="light"] .days-badge.near{color:#8a6200;background:rgba(255,196,0,0.18)}
+[data-theme="light"] .days-badge.warn{color:#cc0033;background:rgba(255,77,109,0.12)}
+
+/* Card actions */
+.shop-actions{display:flex;gap:6px;margin-top:10px}
+.mini-btn{flex:1;padding:8px;border-radius:10px;font-size:11px;font-weight:900;
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:#e8e3d4;}
+.mini-btn:active{transform:scale(.97)}
+.mini-btn.primary{background:rgba(0,224,164,0.15);border-color:rgba(0,224,164,0.35);color:#00e0a4}
+.mini-btn.danger{background:rgba(255,77,109,0.12);border-color:rgba(255,77,109,0.3);color:#ff4d6d}
+.mini-btn.gold{background:rgba(255,196,0,0.15);border-color:rgba(255,196,0,0.35);color:#ffd24a}
+
+/* Search */
+.search-box{position:relative;margin-bottom:12px}
+.search-box .field{padding-right:42px;margin-top:0}
+.search-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  font-size:16px;color:#6a6659;pointer-events:none}
+
+/* FAB */
+.fab{position:fixed;bottom:88px;left:50%;transform:translateX(calc(-50% + 220px));
+  width:56px;height:56px;border-radius:50%;z-index:600;
+  background:linear-gradient(180deg,#00ffc0,#00b884);color:#042018;
+  font-size:28px;font-weight:900;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 20px rgba(0,224,164,0.5),0 4px 0 #006644;
+  transition:transform .15s;}
+.fab:active{transform:translateX(calc(-50% + 220px)) scale(.92)}
+@media(max-width:520px){.fab{left:auto;right:20px;transform:none}.fab:active{transform:scale(.92)}}
+
+/* Tabs */
+.tabs{display:flex;gap:6px;margin:0 0 14px;padding:4px;
+  background:#0c0b10;border:1px solid rgba(255,255,255,0.08);border-radius:16px;}
+.tab{flex:1;padding:11px;border-radius:12px;color:#a09a8a;font-size:12.5px;font-weight:900;transition:all .2s;text-align:center}
+.tab.active{background:linear-gradient(180deg,rgba(0,224,164,0.18),rgba(0,224,164,0.04));color:var(--primary)}
+.tab.gold.active{background:linear-gradient(180deg,rgba(255,196,0,0.18),rgba(255,196,0,0.04));color:var(--gold)}
+
+/* Calculator result */
+.calc-result{margin-top:14px;padding:20px;border-radius:18px;
+  background:linear-gradient(160deg,rgba(0,224,164,0.18),rgba(0,224,164,0.04));
+  border:2px solid rgba(0,224,164,0.4);text-align:center;
+  box-shadow:0 0 30px -10px rgba(0,224,164,0.5);}
+.calc-result.gold{background:linear-gradient(160deg,rgba(255,196,0,0.18),rgba(255,196,0,0.04));
+  border-color:rgba(255,196,0,0.4);box-shadow:0 0 30px -10px rgba(255,196,0,0.5);}
+.calc-result .lbl{font-size:11px;color:#a09a8a;font-weight:700;letter-spacing:1px}
+.calc-result .val{font-size:34px;font-weight:900;color:var(--primary);margin-top:6px;line-height:1.1}
+.calc-result.gold .val{color:var(--gold)}
+.calc-result .val small{font-size:14px;color:#a09a8a;font-weight:700}
+.calc-breakdown{margin-top:12px;padding-top:12px;border-top:1px dashed rgba(255,255,255,0.15);
+  font-size:12px;color:#a09a8a;line-height:1.8}
+.calc-breakdown b{color:#fff;font-weight:900}
+
+/* Modal */
+.modal-back{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(6px);display:flex;align-items:flex-end;justify-content:center;
+  animation:fadeIn .25s;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{width:min(520px,100%);max-height:88vh;overflow-y:auto;
+  background:linear-gradient(180deg,#14121a,#0a090f);
+  border-radius:24px 24px 0 0;
+  border-top:1px solid rgba(0,224,164,0.3);
+  padding:20px 20px 32px;
+  animation:slideUp .3s cubic-bezier(.2,.9,.2,1);}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.modal-title{font-size:18px;font-weight:900;color:var(--primary)}
+.modal-close{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,0.06);
+  color:#a09a8a;font-size:20px;display:flex;align-items:center;justify-content:center}
+.modal-close:active{background:rgba(255,77,109,0.2);color:#ff4d6d}
+.modal-actions{display:flex;gap:8px;margin-top:20px}
+
+/* Toast */
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:linear-gradient(160deg,#1a1820,#0c0b10);
+  border:1px solid rgba(0,224,164,0.4);color:#fff;font-size:13px;font-weight:700;
+  padding:12px 20px;border-radius:14px;
+  box-shadow:0 20px 40px -10px rgba(0,0,0,0.9);
+  z-index:99999;opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;max-width:88vw;text-align:center;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.success{border-color:rgba(0,224,164,0.6)}
+.toast.error{border-color:rgba(255,77,109,0.6)}
+.toast.gold{border-color:rgba(255,196,0,0.6)}
+
+/* Empty state */
+.empty-state{text-align:center;padding:40px 16px;color:#6a6659}
+.empty-state .big{font-size:48px;margin-bottom:12px;opacity:.6}
+.empty-state .ttl{font-size:14px;font-weight:900;color:#a09a8a;margin-bottom:6px}
+
+/* Select */
+select.field{cursor:pointer;appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'><path fill='%2300e0a4' d='M6 9L1 4h10z'/></svg>");
+  background-repeat:no-repeat;background-position:left 14px center;padding-left:38px;}
+select.field option{background:#0c0b10;color:#fff}
+
+/* Divider */
+.divider{height:1px;background:rgba(255,255,255,0.06);margin:14px 0}
+
+/* User avatar big */
+.user-avatar-big{width:80px;height:80px;margin:0 auto 12px;border-radius:50%;
+  background:linear-gradient(160deg,#00e0a4,#006644);color:#042018;
+  display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;
+  box-shadow:0 8px 24px -8px rgba(0,224,164,0.6)}
+.user-name-big{font-size:20px;font-weight:900;color:#fff}
+.user-phone-big{font-size:12px;color:#a09a8a;margin-top:4px;word-break:break-all}
+.user-info-row{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.user-info-row:last-child{border-bottom:0}
+.user-info-row b{color:#00e0a4;font-weight:900}
+
+/* ============ MAP ============ */
+#mapContainer{
+  width:100%;height:340px;border-radius:16px;overflow:hidden;
+  border:1px solid rgba(0,224,164,0.3);background:#0c0b10;
+  position:relative;z-index:1;touch-action:none;
+}
+.leaflet-container{background:#0c0b10!important;font-family:inherit!important}
+.leaflet-popup-content-wrapper{
+  background:#1a1820!important;color:#fff!important;
+  border-radius:12px!important;border:1px solid rgba(0,224,164,0.4)!important;
+  box-shadow:0 8px 24px rgba(0,0,0,0.5)!important;
+}
+.leaflet-popup-tip{background:#1a1820!important}
+.leaflet-popup-content{font-family:inherit!important;font-size:13px!important;margin:10px 14px!important;line-height:1.6}
+.leaflet-control-zoom a{
+  background:#1a1820!important;color:#00e0a4!important;
+  border-color:rgba(0,224,164,0.3)!important;
+}
+.leaflet-control-attribution{
+  background:rgba(10,10,15,0.85)!important;color:#a09a8a!important;font-size:9px!important;
+}
+.leaflet-control-attribution a{color:#00e0a4!important}
+.custom-marker-pulse{animation:markerPulse 2s ease-in-out infinite}
+@keyframes markerPulse{
+  0%,100%{box-shadow:0 4px 12px rgba(0,224,164,0.6),0 0 0 0 rgba(0,224,164,0.6)}
+  50%{box-shadow:0 4px 12px rgba(0,224,164,0.6),0 0 0 14px rgba(0,224,164,0)}
+}
+[data-theme="light"] .leaflet-popup-content-wrapper{background:#fff!important;color:#0a1410!important;border-color:rgba(0,224,164,0.5)!important}
+[data-theme="light"] .leaflet-popup-tip{background:#fff!important}
+[data-theme="light"] .leaflet-control-zoom a{background:#fff!important;color:#006644!important}
+[data-theme="light"] .leaflet-control-attribution{background:rgba(255,255,255,0.9)!important;color:#4a6055!important}
+
+/* Light theme */
+[data-theme="light"]{color-scheme:light}
+[data-theme="light"] body{background:#f0f5f2;color:#0a1410}
+[data-theme="light"] #app{background:radial-gradient(circle at 50% 0%,rgba(0,224,164,0.12) 0%,transparent 40%),#f0f5f2}
+[data-theme="light"] .top{background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,0.94) 100%);border-bottom-color:rgba(0,224,164,0.25)}
+[data-theme="light"] .bottom{background:linear-gradient(0deg,#fff 0%,rgba(255,255,255,0.96) 100%);border-top-color:rgba(0,224,164,0.25)}
+[data-theme="light"] .theme-btn{background:linear-gradient(160deg,#f0faf6,#d6f0e5);border-color:rgba(0,0,0,0.10)}
+[data-theme="light"] .user-btn{background:linear-gradient(160deg,#00c991,#006644)!important;color:#fff!important}
+[data-theme="light"] .nav{color:#6a8075}
+[data-theme="light"] .nav.active{color:#006644;background:rgba(0,224,164,0.12)}
+[data-theme="light"] .nav.active::before{background:#00b884;box-shadow:0 0 10px #00b884}
+[data-theme="light"] .muted,[data-theme="light"] label{color:#4a6055}
+[data-theme="light"] .section-title{color:#0a1410}
+[data-theme="light"] .field{background:#f0faf6;border-color:rgba(0,0,0,0.10);color:#0a1410}
+[data-theme="light"] .field::placeholder{color:#8fa89b}
+[data-theme="light"] .field:focus{background:#fff;border-color:rgba(0,224,164,0.7)}
+[data-theme="light"] .formbox,[data-theme="light"] .card,[data-theme="light"] .stat-card,
+[data-theme="light"] .gen-card,[data-theme="light"] .sub-card{
+  background:linear-gradient(160deg,#fff 0%,#f0faf6 100%);
+  border-color:rgba(0,0,0,0.08);box-shadow:0 10px 30px -15px rgba(0,0,0,0.1);
+}
+[data-theme="light"] .gen-card{border-color:rgba(0,224,164,0.3)}
+[data-theme="light"] .cta-ghost{background:linear-gradient(160deg,#f0faf6,#d6f0e5);border-color:rgba(0,0,0,0.10);color:#0a1410}
+[data-theme="light"] .gen-name,[data-theme="light"] .sub-name{color:#0a1410}
+[data-theme="light"] .gen-meta,[data-theme="light"] .sub-detail{color:#4a6055}
+[data-theme="light"] .gen-row{background:rgba(0,224,164,0.08);border-color:rgba(0,224,164,0.2)}
+[data-theme="light"] .gen-row b{color:#006644}
+[data-theme="light"] .tabs{background:#e6f2ec;border-color:rgba(0,0,0,0.08)}
+[data-theme="light"] .tab{color:#4a6055}
+[data-theme="light"] .tab.active{background:linear-gradient(180deg,rgba(0,224,164,0.3),rgba(0,224,164,0.1));color:#006644}
+[data-theme="light"] .modal{background:linear-gradient(180deg,#fff,#f0faf6)}
+[data-theme="light"] .modal-title{color:#006644}
+[data-theme="light"] .toast{background:linear-gradient(160deg,#fff,#f0faf6);color:#0a1410;box-shadow:0 20px 40px -10px rgba(0,0,0,0.2)}
+[data-theme="light"] .search-icon{color:#8fa89b}
+[data-theme="light"] select.field option{background:#fff;color:#0a1410}
+[data-theme="light"] .calc-result{background:linear-gradient(160deg,rgba(0,224,164,0.22),rgba(0,224,164,0.06))}
+[data-theme="light"] .calc-result .val{color:#006644}
+[data-theme="light"] .calc-result.gold{background:linear-gradient(160deg,rgba(255,196,0,0.22),rgba(255,196,0,0.06))}
+[data-theme="light"] .calc-result.gold .val{color:#8a6200}
+[data-theme="light"] .calc-breakdown{color:#4a6055}
+[data-theme="light"] .calc-breakdown b{color:#0a1410}
+[data-theme="light"] .stat-value{color:#006644}
+[data-theme="light"] .stat-value.gold{color:#8a6200}
+[data-theme="light"] .stat-value.danger{color:#cc0033}
+[data-theme="light"] .stat-label{color:#4a6055}
+[data-theme="light"] #splash{background:radial-gradient(circle at 50% 45%,rgba(0,224,164,0.3) 0%,transparent 55%),radial-gradient(circle at 50% 50%,#e6f2ec 0%,#f0f5f2 70%)}
+[data-theme="light"] .splash-sub{color:#006644}
+[data-theme="light"] .splash-tag{color:#4a6055}
+[data-theme="light"] .splash-line{background:linear-gradient(90deg,transparent,#00b884,transparent)}
+[data-theme="light"] .mini-btn{background:rgba(0,0,0,0.04);border-color:rgba(0,0,0,0.08);color:#0a1410}
+[data-theme="light"] .user-name-big{color:#0a1410}
+[data-theme="light"] .user-phone-big{color:#4a6055}
+[data-theme="light"] .user-info-row{border-bottom-color:rgba(0,0,0,0.06)}
+[data-theme="light"] .user-info-row b{color:#006644}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-orb"></div>
+  <div class="splash-bolt">⚡</div>
+  <div class="splash-logo">أمبير</div>
+  <div class="splash-sub">إدارة المولدات الأهلية</div>
+  <div class="splash-line"></div>
+  <div class="splash-tag">أمبيرات • فواتير • مشتركين • حسابات</div>
+  <div class="splash-progress"></div>
+</div>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen" class="hidden">
+  <button class="theme-btn auth-theme" onclick="toggleTheme()" title="تبديل الوضع">☀️</button>
+  <div class="auth-wrap">
+    <div class="auth-logo">⚡</div>
+    <div class="auth-brand">أمبير</div>
+    <div class="auth-tagline">إدارة المولدات الأهلية</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuth('login')">تسجيل دخول</button>
+      <button class="auth-tab" id="tabSignup" onclick="switchAuth('signup')">إنشاء حساب</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="authLogin" class="auth-panel">
+      <div class="formbox">
+        <label>البريد الإلكتروني</label>
+        <input class="field" id="loginEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com">
+        <div class="auth-err" id="loginErr"></div>
+        <button class="cta-primary" style="margin-top:8px" onclick="doLogin()">🔓 دخول</button>
+      </div>
+      <div class="auth-hint">💡 أول مرة تستخدم التطبيق؟ أنشئ حساباً جديداً من الأعلى</div>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="authSignup" class="auth-panel hidden">
+      <div class="formbox">
+        <label>الاسم الكامل *</label>
+        <input class="field" id="signupName" placeholder="مثلاً: أبو أحمد">
+        <label>البريد الإلكتروني *</label>
+        <input class="field" id="signupEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com">
+        <div class="auth-err" id="signupErr"></div>
+        <button class="cta-primary" style="margin-top:8px" onclick="doSignup()">✨ إنشاء الحساب</button>
+      </div>
+      <div class="auth-hint">🔒 بياناتك محفوظة على جهازك فقط — الدخول بالبريد فقط</div>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <header class="top">
+    <button class="theme-btn" onclick="toggleTheme()" title="تبديل الوضع">☀️</button>
+    <div class="brand-small" onclick="goHome()">
+      <div>
+        <div class="brand-mini">⚡ أمبير</div>
+        <div class="brand-sub">إدارة المولدات</div>
+      </div>
+    </div>
+    <button class="theme-btn user-btn" id="userBtn" onclick="openUserMenu()" title="حسابي">👤</button>
+  </header>
+
+  <main>
+    <section id="home" class="screen active">
+      <div class="section-title">لوحة التحكم</div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-value" id="statGens">0</div>
+          <div class="stat-label">مولدات</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-value" id="statSubs">0</div>
+          <div class="stat-label">مشتركين</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🔌</div>
+          <div class="stat-value" id="statAmps">0</div>
+          <div class="stat-label">إجمالي الأمبيرات</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-value gold" id="statRevenue">0</div>
+          <div class="stat-label">الإيراد الشهري (د.ع)</div>
+        </div>
+      </div>
+
+      <div class="section-title">إجراءات سريعة</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <button class="cta-ghost" style="margin-top:0;padding:20px 10px;font-size:13px;text-align:center" onclick="openGenModal()">
+          <div style="font-size:32px;margin-bottom:6px">⚡</div>
+          مولد
+        </button>
+        <button class="cta-ghost" style="margin-top:0;padding:20px 10px;font-size:13px;text-align:center" onclick="openSubModal()">
+          <div style="font-size:32px;margin-bottom:6px">👥</div>
+          مشترك
+        </button>
+        <button class="cta-ghost" style="margin-top:0;padding:20px 10px;font-size:13px;text-align:center" onclick="goScreen('calc')">
+          <div style="font-size:32px;margin-bottom:6px">🧮</div>
+          الحاسبة
+        </button>
+      </div>
+    </section>
+
+    <section id="generators" class="screen">
+      <div class="section-title">⚡ المولدات الأهلية</div>
+      <div id="genList"></div>
+    </section>
+
+    <section id="subscribers" class="screen">
+      <div class="section-title">👥 المشتركين</div>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input class="field" id="subSearch" placeholder="بحث بالاسم، الهاتف، أو الموقع..." oninput="renderSubscribers()">
+      </div>
+      <div id="subList"></div>
+    </section>
+
+    <section id="calc" class="screen">
+      <div class="section-title">🧮 الحاسبات</div>
+      <div class="tabs">
+        <button class="tab active" data-calc="sub" onclick="switchCalc('sub')">اشتراك مولد</button>
+        <button class="tab gold" data-calc="sale" onclick="switchCalc('sale')">بيع تجاري</button>
+        <button class="tab" data-calc="invoice" onclick="switchCalc('invoice')">فاتورة مشترك</button>
+      </div>
+
+      <div id="calcSub" class="calc-panel">
+        <div class="formbox">
+          <label>عدد الأمبيرات (A)</label>
+          <input class="field" id="calcAmps" type="number" inputmode="decimal" placeholder="مثلاً 5" oninput="calcSub()">
+          <label>سعر الأمبير الشهري (د.ع)</label>
+          <input class="field" id="calcPrice" type="number" inputmode="decimal" placeholder="مثلاً 12000" oninput="calcSub()">
+          <label>عدد الأشهر</label>
+          <input class="field" id="calcMonths" type="number" inputmode="numeric" value="1" oninput="calcSub()">
+          <label>خصم إضافي % (اختياري)</label>
+          <input class="field" id="calcDiscount" type="number" inputmode="decimal" placeholder="0" oninput="calcSub()">
+        </div>
+        <div class="calc-result" id="calcSubResult" style="display:none">
+          <div class="lbl">المجموع الإجمالي</div>
+          <div class="val" id="calcSubTotal">0 <small>د.ع</small></div>
+          <div class="calc-breakdown" id="calcSubBreak"></div>
+        </div>
+      </div>
+
+      <div id="calcSale" class="calc-panel hidden">
+        <div class="formbox">
+          <label>سعر الشراء (الجملة) د.ع</label>
+          <input class="field" id="saleCost" type="number" inputmode="decimal" placeholder="مثلاً 10000" oninput="calcSale()">
+          <label>نسبة الربح %</label>
+          <input class="field" id="saleMargin" type="number" inputmode="decimal" placeholder="مثلاً 25" oninput="calcSale()">
+          <label>أو: سعر البيع (لحساب الربح)</label>
+          <input class="field" id="salePrice" type="number" inputmode="decimal" placeholder="اختياري" oninput="calcSaleReverse()">
+        </div>
+        <div class="calc-result gold" id="calcSaleResult" style="display:none">
+          <div class="lbl">سعر البيع المقترح</div>
+          <div class="val" id="calcSaleTotal">0 <small>د.ع</small></div>
+          <div class="calc-breakdown" id="calcSaleBreak"></div>
+        </div>
+      </div>
+
+      <div id="calcInvoice" class="calc-panel hidden">
+        <div class="formbox">
+          <label>اختر مشترك (اختياري)</label>
+          <select class="field" id="invSub" onchange="fillInvoiceFromSub()">
+            <option value="">— بدون —</option>
+          </select>
+          <label>عدد الأمبيرات</label>
+          <input class="field" id="invAmps" type="number" inputmode="decimal" placeholder="0" oninput="calcInvoice()">
+          <label>سعر الأمبير</label>
+          <input class="field" id="invPrice" type="number" inputmode="decimal" placeholder="12000" oninput="calcInvoice()">
+          <label>الأشهر</label>
+          <input class="field" id="invMonths" type="number" inputmode="numeric" value="1" oninput="calcInvoice()">
+          <label>رسوم إضافية (د.ع)</label>
+          <input class="field" id="invExtra" type="number" inputmode="decimal" placeholder="0" oninput="calcInvoice()">
+        </div>
+        <div class="calc-result" id="calcInvResult" style="display:none">
+          <div class="lbl">إجمالي الفاتورة</div>
+          <div class="val" id="calcInvTotal">0 <small>د.ع</small></div>
+          <div class="calc-breakdown" id="calcInvBreak"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <button class="fab" id="fab" onclick="handleFab()">+</button>
+  <nav class="bottom" id="bottomNav"></nav>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+/* ============ HELPERS ============ */
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n).toLocaleString('en-US');
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const haptic = () => { if (navigator.vibrate) try { navigator.vibrate(15); } catch(e){} };
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+const now = () => Date.now();
+const DAY_MS = 86400000;
+const SUB_PERIOD_DAYS = 30;
+
+/* ============ DATE HELPERS ============ */
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function dateStrToTs(s){
+  if (!s) return now();
+  const parts = String(s).split('-');
+  if (parts.length !== 3) return now();
+  const ts = new Date(Number(parts[0]), Number(parts[1])-1, Number(parts[2])).getTime();
+  return isNaN(ts) ? now() : ts;
+}
+function tsToDateStr(ts){
+  const d = new Date(ts);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function formatDate(ts){
+  const d = new Date(ts);
+  return d.getFullYear() + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + String(d.getDate()).padStart(2,'0');
+}
+function subDaysInfo(sub){
+  const start = sub.startDate || sub.createdAt || now();
+  const elapsed = Math.floor((now() - start) / DAY_MS);
+  const left = SUB_PERIOD_DAYS - elapsed;
+  return { start, elapsed, left, expired: left <= 0 };
+}
+
+/* ============ THEME ============ */
+const THEME_KEY = 'ampere_theme';
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.content = t === 'dark' ? '#050507' : '#f0f5f2';
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    if (btn.title && btn.title.includes('الوضع')) btn.textContent = t === 'dark' ? '☀️' : '🌙';
+  });
+  try { localStorage.setItem(THEME_KEY, t); } catch(e){}
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+  haptic();
+}
+applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+
+/* ============ AUTH ============ */
+const AUTH_USERS_KEY = 'ampere_users';
+const AUTH_SESSION_KEY = 'ampere_session';
+
+function isValidEmail(s){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s); }
+
+function getUsers(){
+  try { return JSON.parse(localStorage.getItem(AUTH_USERS_KEY) || '[]'); }
+  catch(e){ return []; }
+}
+function saveUsers(u){
+  try { localStorage.setItem(AUTH_USERS_KEY, JSON.stringify(u)); } catch(e){}
+}
+function getSessionUser(){
+  try {
+    const raw = localStorage.getItem(AUTH_SESSION_KEY);
+    if (!raw) return null;
+    const sess = JSON.parse(raw);
+    if (!sess || !sess.userId) return null;
+    return getUsers().find(u => u.id === sess.userId) || null;
+  } catch(e){ return null; }
+}
+function setSession(userId){
+  try { localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({ userId, at: now() })); } catch(e){}
+}
+function clearSession(){
+  try { localStorage.removeItem(AUTH_SESSION_KEY); } catch(e){}
+}
+
+function dataKey(base){
+  const u = getSessionUser();
+  return u ? `${base}__${u.id}` : base;
+}
+
+function migrateLegacyData(newUserId){
+  let migrated = false;
+  const legacyGens = localStorage.getItem('ampere_generators');
+  const legacySubs = localStorage.getItem('ampere_subscribers');
+  if (legacyGens && !localStorage.getItem(`ampere_generators__${newUserId}`)){
+    localStorage.setItem(`ampere_generators__${newUserId}`, legacyGens);
+    localStorage.removeItem('ampere_generators');
+    migrated = true;
+  }
+  if (legacySubs && !localStorage.getItem(`ampere_subscribers__${newUserId}`)){
+    localStorage.setItem(`ampere_subscribers__${newUserId}`, legacySubs);
+    localStorage.removeItem('ampere_subscribers');
+  }
+  if (migrated) {
+    localStorage.setItem(`ampere_seeded__${newUserId}`, '1');
+  }
+  if (localStorage.getItem('ampere_seeded')){
+    localStorage.removeItem('ampere_seeded');
+  }
+}
+
+function switchAuth(tab){
+  $('tabLogin').classList.toggle('active', tab === 'login');
+  $('tabSignup').classList.toggle('active', tab === 'signup');
+  $('authLogin').classList.toggle('hidden', tab !== 'login');
+  $('authSignup').classList.toggle('hidden', tab !== 'signup');
+  $('loginErr').textContent = '';
+  $('signupErr').textContent = '';
+  haptic();
+}
+
+function doSignup(){
+  const name = ($('signupName').value || '').trim();
+  const email = ($('signupEmail').value || '').trim().toLowerCase();
+  const err = $('signupErr');
+
+  if (!name){ err.textContent = '⚠️ الاسم مطلوب'; return; }
+  if (!email){ err.textContent = '⚠️ البريد الإلكتروني مطلوب'; return; }
+  if (!isValidEmail(email)){ err.textContent = '⚠️ البريد الإلكتروني غير صالح'; return; }
+
+  const users = getUsers();
+  if (users.some(u => (u.email || '').toLowerCase() === email)){
+    err.textContent = '⚠️ هذا البريد مسجل مسبقاً — جرّب الدخول';
+    return;
+  }
+
+  const newUser = {
+    id: uid(),
+    name,
+    email,
+    createdAt: now()
+  };
+  users.push(newUser);
+  saveUsers(users);
+
+  migrateLegacyData(newUser.id);
+  setSession(newUser.id);
+
+  haptic();
+  toast('🎉 مرحباً ' + name + ' — تم إنشاء حسابك', 'success');
+
+  $('signupName').value = '';
+  $('signupEmail').value = '';
+  err.textContent = '';
+
+  enterApp();
+}
+
+function doLogin(){
+  const input = ($('loginEmail').value || '').trim();
+  const err = $('loginErr');
+
+  if (!input){ err.textContent = '⚠️ أدخل البريد الإلكتروني'; return; }
+
+  const users = getUsers();
+  let user = null;
+
+  if (input.includes('@')){
+    const email = input.toLowerCase();
+    if (!isValidEmail(email)){ err.textContent = '⚠️ البريد الإلكتروني غير صالح'; return; }
+    user = users.find(u => (u.email || '').toLowerCase() === email);
+  } else {
+    user = users.find(u => u.phone === input);
+  }
+
+  if (!user){ err.textContent = '⚠️ لا يوجد حساب بهذا البريد'; return; }
+
+  setSession(user.id);
+  haptic();
+  toast('👋 أهلاً بعودتك ' + user.name, 'success');
+
+  $('loginEmail').value = '';
+  err.textContent = '';
+
+  enterApp();
+}
+
+function doLogout(){
+  const u = getSessionUser();
+  if (!u) return;
+  clearSession();
+  closeModal();
+  haptic();
+  toast('👋 تم تسجيل الخروج', 'gold');
+  setTimeout(() => {
+    showAuth();
+  }, 200);
+}
+
+function updateUserBtn(){
+  const u = getSessionUser();
+  const btn = $('userBtn');
+  if (!btn) return;
+  if (u){
+    const initial = u.name ? u.name.trim().charAt(0) : '👤';
+    btn.textContent = initial;
+  } else {
+    btn.textContent = '👤';
+  }
+}
+
+function openUserMenu(){
+  const u = getSessionUser();
+  if (!u){ showAuth(); return; }
+
+  const gens = getGenerators();
+  const subs = getSubscribers();
+  let revenue = 0;
+  subs.forEach(s => {
+    const g = gens.find(x => x.id === s.generatorId);
+    const price = g ? Number(g.pricePerAmp) : Number(s.pricePerAmp || 0);
+    revenue += Number(s.amps) * price;
+  });
+
+  const contactLine = u.email ? '📧 ' + esc(u.email) : (u.phone ? '📞 ' + esc(u.phone) : '');
+
+  openModal('👤 حسابي', `
+    <div style="text-align:center;padding:6px 0 16px">
+      <div class="user-avatar-big">${esc((u.name || '?').charAt(0))}</div>
+      <div class="user-name-big">${esc(u.name)}</div>
+      <div class="user-phone-big">${contactLine}</div>
+    </div>
+
+    <div style="padding:6px 14px;background:rgba(0,224,164,0.06);border:1px solid rgba(0,224,164,0.2);border-radius:14px">
+      <div class="user-info-row">
+        <span>⚡ المولدات</span>
+        <b>${fmt(gens.length)}</b>
+      </div>
+      <div class="user-info-row">
+        <span>👥 المشتركين</span>
+        <b>${fmt(subs.length)}</b>
+      </div>
+      <div class="user-info-row">
+        <span>💰 الإيراد الشهري</span>
+        <b>${fmt(Math.round(revenue))} د.ع</b>
+      </div>
+      <div class="user-info-row">
+        <span>📅 عضو منذ</span>
+        <b>${formatDate(u.createdAt)}</b>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="cta-ghost" style="margin-top:0" onclick="closeModal()">إغلاق</button>
+      <button class="cta-primary cta-danger-solid" style="margin-top:0" onclick="doLogout()">🚪 تسجيل الخروج</button>
+    </div>
+  `);
+}
+
+/* ============ DATA ============ */
+const KEYS_BASE = {
+  generators: 'ampere_generators',
+  subscribers: 'ampere_subscribers'
+};
+
+function load(key){ try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){ return []; } }
+function save(key, data){ try { localStorage.setItem(key, JSON.stringify(data)); } catch(e){} }
+function getGenerators(){ return load(dataKey(KEYS_BASE.generators)); }
+function getSubscribers(){ return load(dataKey(KEYS_BASE.subscribers)); }
+function saveGenerators(d){ save(dataKey(KEYS_BASE.generators), d); renderAll(); }
+function saveSubscribers(d){ save(dataKey(KEYS_BASE.subscribers), d); renderAll(); }
+
+/* ============ TOAST ============ */
+let toastTimer = null;
+function toast(msg, type='info'){
+  const old = document.querySelector('.toast');
+  if (old) old.remove();
+  clearTimeout(toastTimer);
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  document.body.appendChild(el);
+  requestAnimationFrame(() => el.classList.add('show'));
+  toastTimer = setTimeout(() => { el.classList.remove('show'); setTimeout(() => el.remove(), 350); }, 2600);
+}
+
+/* ============ NAV ============ */
+const NAV_ITEMS = [
+  { id: 'home', icon: '⌂', label: 'الرئيسية' },
+  { id: 'generators', icon: '⚡', label: 'المولدات' },
+  { id: 'subscribers', icon: '👥', label: 'المشتركين' },
+  { id: 'calc', icon: '🧮', label: 'الحاسبة' }
+];
+let currentScreen = 'home';
+
+function renderNav(){
+  $('bottomNav').innerHTML = NAV_ITEMS.map(it =>
+    `<button class="nav ${it.id === currentScreen ? 'active' : ''}" onclick="goScreen('${it.id}')">
+      <b>${it.icon}</b><span>${it.label}</span>
+    </button>`
+  ).join('');
+}
+
+function goScreen(id){
+  currentScreen = id;
+  document.querySelectorAll('.screen').forEach(s => s.classList.toggle('active', s.id === id));
+  renderNav();
+  if (id === 'subscribers') renderSubscribers();
+  if (id === 'generators') renderGenerators();
+  if (id === 'calc') initCalcSelects();
+  if (id === 'home') renderHome();
+  const fab = $('fab');
+  if (id === 'calc') fab.classList.add('hidden');
+  else fab.classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function goHome(){ goScreen('home'); }
+
+function handleFab(){
+  if (currentScreen === 'generators') openGenModal();
+  else if (currentScreen === 'subscribers') openSubModal();
+  else if (currentScreen === 'home') openGenModal();
+}
+
+/* ============ HOME ============ */
+function renderHome(){
+  const gens = getGenerators();
+  const subs = getSubscribers();
+  $('statGens').textContent = gens.length;
+  $('statSubs').textContent = subs.length;
+  let revenue = 0, totalAmps = 0;
+  subs.forEach(s => {
+    const g = gens.find(x => x.id === s.generatorId);
+    const price = g ? Number(g.pricePerAmp) : Number(s.pricePerAmp || 0);
+    revenue += Number(s.amps) * price;
+    totalAmps += Number(s.amps);
+  });
+  $('statRevenue').textContent = fmt(Math.round(revenue));
+  $('statAmps').textContent = fmt(totalAmps) + 'A';
+}
+
+/* ============ GENERATORS ============ */
+function renderGenerators(){
+  const list = getGenerators();
+  const el = $('genList');
+  if (list.length === 0){
+    el.innerHTML = `<div class="empty-state"><div class="big">⚡</div>
+      <div class="ttl">لا توجد مولدات بعد</div>
+      <div class="muted">اضغط + لإضافة مولد جديد</div></div>`;
+    return;
+  }
+  const subs = getSubscribers();
+  el.innerHTML = list.map(g => {
+    const genSubs = subs.filter(s => s.generatorId === g.id);
+    const totalAmps = genSubs.reduce((a, s) => a + Number(s.amps), 0);
+    return `<div class="gen-card">
+      <div class="gen-head">
+        <div>
+          <div class="gen-name">⚡ ${esc(g.name)}</div>
+          <div class="gen-meta">${esc(g.location || '')}${g.location ? ' • ' : ''}${esc(g.notes || '')}</div>
+        </div>
+        <div class="gen-badge">${genSubs.length} مشترك</div>
+      </div>
+      <div class="gen-rows">
+        <div class="gen-row">السعة الإجمالية<b>${fmt(g.capacity || 0)} A</b></div>
+        <div class="gen-row">الأمبيرات المخصصة<b style="color:var(--gold)">${fmt(totalAmps)} A</b></div>
+        <div class="gen-row">سعر الأمبير<b>${fmt(g.pricePerAmp || 0)} د.ع</b></div>
+        <div class="gen-row">ساعات التشغيل<b>${fmt(g.hours || 0)} ساعة</b></div>
+      </div>
+      <div class="shop-actions">
+        <button class="mini-btn primary" onclick="openSubModal('${g.id}')">+ مشترك</button>
+        <button class="mini-btn gold" onclick="openGenModal('${g.id}')">تعديل</button>
+        <button class="mini-btn danger" onclick="deleteGenerator('${g.id}')">حذف</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openGenModal(id){
+  const gen = id ? getGenerators().find(g => g.id === id) : null;
+  openModal(gen ? 'تعديل مولد' : 'إضافة مولد', `
+    <label>اسم المولد *</label>
+    <input class="field" id="mGenName" placeholder="مثلاً: مولد الحي" value="${esc(gen?.name || '')}">
+    <label>الموقع / المنطقة</label>
+    <input class="field" id="mGenLoc" placeholder="مثلاً: الكرادة" value="${esc(gen?.location || '')}">
+    <label>السعة الإجمالية (أمبير)</label>
+    <input class="field" id="mGenCap" type="number" inputmode="decimal" placeholder="100" value="${esc(gen?.capacity || '')}">
+    <label>سعر الأمبير الشهري (د.ع)</label>
+    <input class="field" id="mGenPrice" type="number" inputmode="decimal" placeholder="12000" value="${esc(gen?.pricePerAmp || '')}">
+    <label>ساعات التشغيل اليومية</label>
+    <input class="field" id="mGenHours" type="number" inputmode="decimal" placeholder="8" value="${esc(gen?.hours || '')}">
+    <label>ملاحظات</label>
+    <input class="field" id="mGenNotes" placeholder="اختياري" value="${esc(gen?.notes || '')}">
+    <div class="modal-actions">
+      <button class="cta-ghost" style="margin-top:0" onclick="closeModal()">إلغاء</button>
+      <button class="cta-primary" style="margin-top:0" onclick="saveGen('${id || ''}')">حفظ</button>
+    </div>
+  `);
+}
+
+function saveGen(id){
+  const name = $('mGenName').value.trim();
+  if (!name){ toast('اسم المولد مطلوب', 'error'); return; }
+  const data = {
+    id: id || uid(),
+    name,
+    location: $('mGenLoc').value.trim(),
+    capacity: Number($('mGenCap').value) || 0,
+    pricePerAmp: Number($('mGenPrice').value) || 0,
+    hours: Number($('mGenHours').value) || 0,
+    notes: $('mGenNotes').value.trim()
+  };
+  const list = getGenerators();
+  const i = list.findIndex(g => g.id === data.id);
+  if (i >= 0) list[i] = data; else list.push(data);
+  saveGenerators(list);
+  haptic();
+  toast('✅ تم الحفظ', 'success');
+  closeModal();
+}
+
+function deleteGenerator(id){
+  if (!confirm('حذف المولد؟ سيتم فصل المشتركين المرتبطين به.')) return;
+  saveGenerators(getGenerators().filter(g => g.id !== id));
+  const subs = getSubscribers().map(s => s.generatorId === id ? { ...s, generatorId: '' } : s);
+  saveSubscribers(subs);
+  haptic();
+  toast('تم الحذف', 'gold');
+}
+
+/* ============ SUBSCRIBERS ============ */
+function renderSubscribers(){
+  const query = ($('subSearch')?.value || '').trim().toLowerCase();
+  let list = getSubscribers();
+  if (query) list = list.filter(s =>
+    (s.name || '').toLowerCase().includes(query) ||
+    (s.phone || '').includes(query) ||
+    (s.location || '').toLowerCase().includes(query)
+  );
+  const el = $('subList');
+  if (list.length === 0){
+    el.innerHTML = `<div class="empty-state"><div class="big">👥</div>
+      <div class="ttl">لا يوجد مشتركين</div>
+      <div class="muted">اضغط + لإضافة مشترك</div></div>`;
+    return;
+  }
+  const gens = getGenerators();
+  el.innerHTML = list.map(s => {
+    const g = gens.find(x => x.id === s.generatorId);
+    const monthly = Number(s.amps) * (g ? Number(g.pricePerAmp) : Number(s.pricePerAmp || 0));
+    const info = subDaysInfo(s);
+
+    let cls = 'ok', label;
+    if (info.expired){
+      cls = 'warn';
+      label = `⚠️ انتهى منذ ${Math.abs(info.left)} يوم`;
+    } else if (info.left <= 5){
+      cls = 'warn';
+      label = `⏱ متبقي ${info.left} يوم`;
+    } else if (info.left <= 10){
+      cls = 'near';
+      label = `⏱ متبقي ${info.left} يوم`;
+    } else {
+      cls = 'ok';
+      label = `⏱ متبقي ${info.left} يوم`;
+    }
+
+    const parts1 = [];
+    if (s.location) parts1.push('📍 ' + esc(s.location));
+    parts1.push(s.phone ? '📞 ' + esc(s.phone) : 'بدون رقم');
+    if (g) parts1.push('⚡ ' + esc(g.name));
+
+    const hasLocation = s.lat != null && s.lng != null;
+    const locationBtn = hasLocation
+      ? `<button class="mini-btn gold" style="flex:0;padding:8px 12px;width:auto" onclick="openMapModal('${s.id}')" title="عرض الموقع على الخريطة">🗺️</button>`
+      : '';
+
+    return `<div class="sub-card">
+      <div class="sub-avatar">${esc((s.name || '?').charAt(0))}</div>
+      <div class="sub-info">
+        <div class="sub-name">${esc(s.name)}</div>
+        <div class="sub-detail">${parts1.join(' • ')}</div>
+        <div class="sub-detail" style="color:var(--primary);font-weight:900">${fmt(Math.round(monthly))} د.ع/شهر</div>
+      </div>
+      <div class="sub-amps">${fmt(s.amps)} A<small>أمبير</small></div>
+      <div style="display:flex;gap:4px;flex-shrink:0">
+        <button class="mini-btn" style="flex:0;padding:6px 8px;width:auto" onclick="openSubModal(null,'${s.id}')" title="تعديل">✎</button>
+        <button class="mini-btn danger" style="flex:0;padding:6px 8px;width:auto" onclick="confirmDeleteSub('${s.id}')" title="حذف المشترك">🗑️</button>
+      </div>
+      <div class="days-row">
+        <div class="days-badge ${cls}">
+          ${label} <small>• بدأ ${formatDate(info.start)}</small>
+        </div>
+        <button class="mini-btn primary" style="flex:0;padding:8px 12px;width:auto;white-space:nowrap" onclick="renewSub('${s.id}')">🔄 تجديد</button>
+        ${locationBtn}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renewSub(id){
+  const list = getSubscribers();
+  const i = list.findIndex(s => s.id === id);
+  if (i < 0) return;
+  list[i].startDate = now();
+  saveSubscribers(list);
+  haptic();
+  toast('✅ تم تجديد الاشتراك لمدة 30 يوم', 'success');
+}
+
+/* ============ DELETE SUBSCRIBER ============ */
+function confirmDeleteSub(id){
+  const sub = getSubscribers().find(s => s.id === id);
+  if (!sub) { toast('المشترك غير موجود', 'error'); return; }
+  const gens = getGenerators();
+  const gen = sub.generatorId ? gens.find(g => g.id === sub.generatorId) : null;
+  const monthly = Number(sub.amps) * (gen ? Number(gen.pricePerAmp) : Number(sub.pricePerAmp || 0));
+
+  openModal('⚠️ حذف المشترك', `
+    <div style="text-align:center;padding:10px 0 4px">
+      <div style="width:76px;height:76px;margin:0 auto 14px;border-radius:50%;
+        background:radial-gradient(circle,rgba(255,77,109,0.25) 0%,rgba(255,77,109,0.05) 70%);
+        display:flex;align-items:center;justify-content:center;font-size:38px;
+        border:2px solid rgba(255,77,109,0.4)">🗑️</div>
+      <div style="font-size:17px;font-weight:900;color:#fff;margin-bottom:10px">هل تريد حذف هذا المشترك؟</div>
+      <div style="font-size:13px;color:#a09a8a;line-height:1.8">
+        سيتم حذف <b style="color:#ff4d6d">${esc(sub.name)}</b> نهائياً من قائمة المشتركين.<br>
+        لا يمكن التراجع عن هذا الإجراء.
+      </div>
+    </div>
+
+    <div style="margin-top:16px;padding:14px;background:rgba(255,77,109,0.08);
+      border:1px solid rgba(255,77,109,0.25);border-radius:14px;font-size:12px;color:#ff4d6d;line-height:1.9">
+      <div style="display:flex;justify-content:space-between">
+        <span>⚡ الأمبيرات المحرّرة:</span>
+        <b style="color:#fff">${fmt(sub.amps)} A</b>
+      </div>
+      <div style="display:flex;justify-content:space-between">
+        <span>💰 الإيراد المفقود شهرياً:</span>
+        <b style="color:#fff">${fmt(Math.round(monthly))} د.ع</b>
+      </div>
+      ${gen ? `<div style="display:flex;justify-content:space-between">
+        <span>🔌 المولد المرتبط:</span>
+        <b style="color:#fff">${esc(gen.name)}</b>
+      </div>` : ''}
+    </div>
+
+    <div class="modal-actions">
+      <button class="cta-ghost" style="margin-top:0" onclick="closeModal()">إلغاء</button>
+      <button class="cta-primary cta-danger-solid" style="margin-top:0" onclick="doDeleteSub('${id}')">🗑️ حذف نهائي</button>
+    </div>
+  `);
+}
+
+function doDeleteSub(id){
+  const sub = getSubscribers().find(s => s.id === id);
+  if (!sub) return;
+  const list = getSubscribers().filter(s => s.id !== id);
+  saveSubscribers(list);
+  haptic();
+  closeModal();
+  toast('🗑️ تم حذف ' + sub.name + ' وتحرير ' + fmt(sub.amps) + 'A', 'gold');
+}
+
+function openSubModal(presetGenId, subId){
+  const sub = subId ? getSubscribers().find(s => s.id === subId) : null;
+  const gens = getGenerators();
+  const gopts = gens.map(g => `<option value="${g.id}" ${(sub?.generatorId === g.id) || (presetGenId === g.id) ? 'selected' : ''}>${esc(g.name)} — ${fmt(g.pricePerAmp)} د.ع/A</option>`).join('');
+  const defaultStart = sub ? (sub.startDate || sub.createdAt || now()) : now();
+  const latVal = sub && sub.lat != null ? sub.lat : '';
+  const lngVal = sub && sub.lng != null ? sub.lng : '';
+  const hasLoc = latVal !== '' && lngVal !== '';
+
+  openModal(sub ? 'تعديل مشترك' : 'إضافة مشترك', `
+    <label>اسم المشترك *</label>
+    <input class="field" id="mSubName" placeholder="الاسم الكامل" value="${esc(sub?.name || '')}">
+    <label>رقم الهاتف</label>
+    <input class="field" id="mSubPhone" type="tel" placeholder="07XXXXXXXXX" value="${esc(sub?.phone || '')}">
+    <label>الموقع / العنوان</label>
+    <input class="field" id="mSubLoc" placeholder="مثلاً: الكرادة - شارع 62" value="${esc(sub?.location || '')}">
+    <label>المولد التابع له</label>
+    <select class="field" id="mSubGen">${gopts || '<option value="">— لا يوجد مولدات —</option>'}</select>
+    <label>عدد الأمبيرات *</label>
+    <input class="field" id="mSubAmps" type="number" inputmode="decimal" placeholder="5" value="${esc(sub?.amps || '')}">
+    <label>سعر الأمبير (فقط إن لم يُربط بمولد)</label>
+    <input class="field" id="mSubPrice" type="number" inputmode="decimal" placeholder="12000" value="${esc(sub?.pricePerAmp || '')}">
+    <label>تاريخ بدء الاشتراك (لمدة 30 يوم)</label>
+    <input class="field" id="mSubStart" type="date" value="${tsToDateStr(defaultStart)}">
+
+    <div class="divider"></div>
+    <label>📍 الموقع الجغرافي (GPS)</label>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button type="button" class="cta-ghost" style="margin-top:0;padding:12px;flex:1;font-size:13px" onclick="captureLocation(this)">📡 تحديد موقعي الحالي</button>
+      <button type="button" class="cta-ghost" style="margin-top:0;padding:12px;flex:0 0 auto;width:auto;padding-left:16px;padding-right:16px" onclick="clearLocation()" title="مسح الموقع">✕</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+      <input class="field" id="mSubLat" type="number" step="any" inputmode="decimal" placeholder="خط العرض (lat)" value="${latVal}">
+      <input class="field" id="mSubLng" type="number" step="any" inputmode="decimal" placeholder="خط الطول (lng)" value="${lngVal}">
+    </div>
+    <div id="mapHint" style="font-size:10.5px;color:#6a6659;margin-top:6px;text-align:center">
+      ${hasLoc ? '✅ الموقع محدد — سيظهر زر 🗺️ في بطاقة المشترك' : '💡 اضغط "تحديد موقعي" أو أدخل الإحداثيات يدوياً'}
+    </div>
+
+    <label>ملاحظات</label>
+    <input class="field" id="mSubNotes" placeholder="اختياري" value="${esc(sub?.notes || '')}">
+    <div class="modal-actions">
+      <button class="cta-ghost" style="margin-top:0" onclick="closeModal()">إلغاء</button>
+      <button class="cta-primary" style="margin-top:0" onclick="saveSub('${subId || ''}')">حفظ</button>
+    </div>
+    ${sub ? `
+      <div class="divider"></div>
+      <button class="cta-ghost cta-danger" style="margin-top:0" onclick="confirmDeleteSub('${subId}')">
+        🗑️ حذف المشترك نهائياً
+      </button>
+    ` : ''}
+  `);
+}
+
+function saveSub(id){
+  const name = $('mSubName').value.trim();
+  const amps = Number($('mSubAmps').value) || 0;
+  if (!name){ toast('اسم المشترك مطلوب', 'error'); return; }
+  if (amps <= 0){ toast('أدخل عدد الأمبيرات', 'error'); return; }
+  const existing = id ? getSubscribers().find(s => s.id === id) : null;
+  const latRaw = $('mSubLat')?.value;
+  const lngRaw = $('mSubLng')?.value;
+  const lat = (latRaw !== '' && latRaw != null && !isNaN(Number(latRaw))) ? Number(latRaw) : null;
+  const lng = (lngRaw !== '' && lngRaw != null && !isNaN(Number(lngRaw))) ? Number(lngRaw) : null;
+
+  const data = {
+    id: id || uid(),
+    name,
+    phone: $('mSubPhone').value.trim(),
+    location: $('mSubLoc').value.trim(),
+    generatorId: $('mSubGen').value,
+    amps,
+    pricePerAmp: Number($('mSubPrice').value) || 0,
+    startDate: dateStrToTs($('mSubStart').value),
+    lat, lng,
+    notes: $('mSubNotes').value.trim(),
+    createdAt: existing?.createdAt || now()
+  };
+  const list = getSubscribers();
+  const i = list.findIndex(s => s.id === data.id);
+  if (i >= 0) list[i] = data; else list.push(data);
+  saveSubscribers(list);
+  haptic();
+  toast('✅ تم الحفظ', 'success');
+  closeModal();
+}
+
+/* ============ GEOLOCATION ============ */
+function captureLocation(btn){
+  if (!navigator.geolocation){
+    toast('المتصفح لا يدعم تحديد الموقع', 'error');
+    return;
+  }
+  const orig = btn.textContent;
+  btn.textContent = '⏳ جاري التحديد...';
+  btn.disabled = true;
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      const latEl = $('mSubLat');
+      const lngEl = $('mSubLng');
+      if (latEl) latEl.value = pos.coords.latitude.toFixed(6);
+      if (lngEl) lngEl.value = pos.coords.longitude.toFixed(6);
+      btn.textContent = orig;
+      btn.disabled = false;
+      const hint = $('mapHint');
+      if (hint) hint.innerHTML = '✅ تم تحديد الموقع بنجاح';
+      haptic();
+      toast('✅ تم تحديد الموقع', 'success');
+    },
+    (err) => {
+      btn.textContent = orig;
+      btn.disabled = false;
+      let msg = 'تعذر تحديد الموقع';
+      if (err.code === 1) msg = 'تم رفض الإذن — فعّل GPS من إعدادات المتصفح';
+      else if (err.code === 2) msg = 'الموقع غير متوفر — تحقق من GPS';
+      else if (err.code === 3) msg = 'انتهت مهلة تحديد الموقع';
+      toast(msg, 'error');
+    },
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+  );
+}
+
+function clearLocation(){
+  const latEl = $('mSubLat');
+  const lngEl = $('mSubLng');
+  if (latEl) latEl.value = '';
+  if (lngEl) lngEl.value = '';
+  const hint = $('mapHint');
+  if (hint) hint.innerHTML = '💡 اضغط "تحديد موقعي" أو أدخل الإحداثيات يدوياً';
+  haptic();
+  toast('تم مسح الموقع', 'gold');
+}
+
+/* ============ MAP ============ */
+let mapInstance = null;
+let leafletLoading = null;
+
+function ensureLeaflet(){
+  if (typeof L !== 'undefined') return Promise.resolve(true);
+  if (leafletLoading) return leafletLoading;
+  leafletLoading = new Promise((resolve) => {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(link);
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.head.appendChild(script);
+  });
+  return leafletLoading;
+}
+
+function openMapModal(subId){
+  const sub = getSubscribers().find(s => s.id === subId);
+  if (!sub) return;
+  if (sub.lat == null || sub.lng == null){
+    toast('لا يوجد موقع محفوظ لهذا المشترك', 'error');
+    return;
+  }
+  const gens = getGenerators();
+  const gen = sub.generatorId ? gens.find(g => g.id === sub.generatorId) : null;
+
+  openModal('🗺️ موقع المشترك', `
+    <div style="margin-bottom:12px">
+      <div style="font-size:18px;font-weight:900;color:var(--primary)">${esc(sub.name)}</div>
+      ${sub.location ? `<div style="font-size:12px;color:#a09a8a;margin-top:4px">📍 ${esc(sub.location)}</div>` : ''}
+      ${gen ? `<div style="font-size:12px;color:#a09a8a;margin-top:2px">⚡ ${esc(gen.name)} — ${fmt(sub.amps)} أمبير</div>` : ''}
+    </div>
+    <div id="mapContainer"></div>
+    <div style="margin-top:12px;padding:12px;background:rgba(0,0,0,0.3);border-radius:12px;font-size:12px;color:#a09a8a;text-align:center">
+      <div>الإحداثيات: <b style="color:#fff">${Number(sub.lat).toFixed(6)}, ${Number(sub.lng).toFixed(6)}</b></div>
+    </div>
+    <div class="modal-actions">
+      <button class="cta-ghost" style="margin-top:0" onclick="window.open('https://www.google.com/maps?q=${sub.lat},${sub.lng}', '_blank')">🗺️ Google Maps</button>
+      <button class="cta-primary" style="margin-top:0" onclick="closeModal()">إغلاق</button>
+    </div>
+  `);
+
+  setTimeout(() => {
+    const mapEl = document.getElementById('mapContainer');
+    if (!mapEl) return;
+    ensureLeaflet().then((ok) => {
+      if (!ok || typeof L === 'undefined'){
+        mapEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;padding:20px;text-align:center;color:#a09a8a"><div style="font-size:44px;margin-bottom:12px">🗺️</div><div style="font-size:14px;font-weight:900">تعذر تحميل الخريطة</div><div style="font-size:11px;margin-top:6px">تحقق من اتصال الإنترنت</div><div style="font-size:11px;margin-top:8px;color:#00e0a4">استخدم زر Google Maps أدناه</div></div>';
+        return;
+      }
+      if (mapInstance){ try { mapInstance.remove(); } catch(e){} mapInstance = null; }
+      const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+      const tileUrl = theme === 'dark'
+        ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+        : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+      mapInstance = L.map('mapContainer', {
+        center: [sub.lat, sub.lng], zoom: 16,
+        zoomControl: true, attributionControl: true
+      });
+      L.tileLayer(tileUrl, {
+        attribution: '© OpenStreetMap © CARTO',
+        maxZoom: 19, subdomains: 'abcd'
+      }).addTo(mapInstance);
+      const pulseIcon = L.divIcon({
+        className: '',
+        html: '<div class="custom-marker-pulse" style="width:34px;height:34px;background:linear-gradient(180deg,#00ffc0,#00b884);border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:16px;box-shadow:0 4px 12px rgba(0,224,164,0.6)">⚡</div>',
+        iconSize: [34, 34], iconAnchor: [17, 17], popupAnchor: [0, -17]
+      });
+      const popupHtml = `<div style="text-align:center;min-width:140px">
+        <div style="font-weight:900;font-size:14px;margin-bottom:4px">${esc(sub.name)}</div>
+        ${sub.location ? `<div style="font-size:11px;opacity:.8">📍 ${esc(sub.location)}</div>` : ''}
+        ${gen ? `<div style="font-size:11px;opacity:.8;margin-top:2px">⚡ ${esc(gen.name)}</div>` : ''}
+        <div style="font-size:11px;color:#00e0a4;margin-top:6px;font-weight:900">${fmt(sub.amps)} أمبير</div>
+      </div>`;
+      L.marker([sub.lat, sub.lng], { icon: pulseIcon })
+        .addTo(mapInstance).bindPopup(popupHtml).openPopup();
+      setTimeout(() => { try { mapInstance.invalidateSize(); } catch(e){} }, 250);
+    });
+  }, 120);
+}
+
+/* ============ CALCULATOR ============ */
+let currentCalc = 'sub';
+function switchCalc(tab){
+  currentCalc = tab;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.calc === tab));
+  document.querySelectorAll('.calc-panel').forEach(p => p.classList.add('hidden'));
+  $('calc' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.remove('hidden');
+  if (tab === 'invoice') initCalcSelects();
+}
+
+function initCalcSelects(){
+  const sel = $('invSub');
+  if (!sel) return;
+  const subs = getSubscribers();
+  const gens = getGenerators();
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— بدون —</option>' + subs.map(s => {
+    const g = gens.find(x => x.id === s.generatorId);
+    const price = g ? g.pricePerAmp : (s.pricePerAmp || 0);
+    return `<option value="${s.id}" data-amps="${s.amps}" data-price="${price}">${esc(s.name)} — ${fmt(s.amps)}A</option>`;
+  }).join('');
+  if (cur) sel.value = cur;
+}
+
+function fillInvoiceFromSub(){
+  const sel = $('invSub');
+  const opt = sel.options[sel.selectedIndex];
+  if (!opt || !opt.value) return;
+  $('invAmps').value = opt.dataset.amps || '';
+  $('invPrice').value = opt.dataset.price || '';
+  calcInvoice();
+}
+
+function calcSub(){
+  const amps = Number($('calcAmps').value) || 0;
+  const price = Number($('calcPrice').value) || 0;
+  const months = Number($('calcMonths').value) || 1;
+  const disc = Number($('calcDiscount').value) || 0;
+  if (amps <= 0 || price <= 0){ $('calcSubResult').style.display = 'none'; return; }
+  const monthly = amps * price;
+  const subtotal = monthly * months;
+  const discountAmt = subtotal * disc / 100;
+  const total = subtotal - discountAmt;
+  $('calcSubResult').style.display = 'block';
+  $('calcSubTotal').innerHTML = fmt(Math.round(total)) + ' <small>د.ع</small>';
+  $('calcSubBreak').innerHTML = `
+    <div>الأمبيرات × السعر = <b>${fmt(amps)} × ${fmt(price)}</b> = ${fmt(Math.round(monthly))} د.ع/شهر</div>
+    <div>المجموع (${months} شهر) = <b>${fmt(Math.round(subtotal))}</b> د.ع</div>
+    ${disc > 0 ? `<div>خصم ${disc}% = <b style="color:#ff4d6d">−${fmt(Math.round(discountAmt))}</b> د.ع</div>` : ''}
+  `;
+}
+
+function calcSale(){
+  const cost = Number($('saleCost').value) || 0;
+  const margin = Number($('saleMargin').value) || 0;
+  if (cost <= 0 || margin < 0){ $('calcSaleResult').style.display = 'none'; return; }
+  const profit = cost * margin / 100;
+  const total = cost + profit;
+  $('calcSaleResult').style.display = 'block';
+  $('calcSaleTotal').innerHTML = fmt(Math.round(total)) + ' <small>د.ع</small>';
+  $('calcSaleBreak').innerHTML = `
+    <div>سعر الشراء = <b>${fmt(cost)}</b> د.ع</div>
+    <div>الربح ${margin}% = <b style="color:#ffd24a">+${fmt(Math.round(profit))}</b> د.ع</div>
+    <div style="margin-top:6px;font-size:13px;color:#fff">سعر البيع = <b style="color:#ffd24a">${fmt(Math.round(total))} د.ع</b></div>
+  `;
+}
+
+function calcSaleReverse(){
+  const cost = Number($('saleCost').value) || 0;
+  const price = Number($('salePrice').value) || 0;
+  if (cost <= 0 || price <= 0) return;
+  const profit = price - cost;
+  const margin = (profit / cost) * 100;
+  $('saleMargin').value = Math.round(margin * 100) / 100;
+  $('calcSaleResult').style.display = 'block';
+  $('calcSaleTotal').innerHTML = fmt(Math.round(price)) + ' <small>د.ع</small>';
+  $('calcSaleBreak').innerHTML = `
+    <div>سعر الشراء = <b>${fmt(cost)}</b> د.ع</div>
+    <div>سعر البيع = <b>${fmt(price)}</b> د.ع</div>
+    <div>الربح = <b style="color:#ffd24a">${fmt(Math.round(profit))}</b> د.ع (${margin.toFixed(1)}%)</div>
+  `;
+}
+
+function calcInvoice(){
+  const amps = Number($('invAmps').value) || 0;
+  const price = Number($('invPrice').value) || 0;
+  const months = Number($('invMonths').value) || 1;
+  const extra = Number($('invExtra').value) || 0;
+  if (amps <= 0 || price <= 0){ $('calcInvResult').style.display = 'none'; return; }
+  const monthly = amps * price;
+  const subtotal = monthly * months;
+  const total = subtotal + extra;
+  $('calcInvResult').style.display = 'block';
+  $('calcInvTotal').innerHTML = fmt(Math.round(total)) + ' <small>د.ع</small>';
+  $('calcInvBreak').innerHTML = `
+    <div>${fmt(amps)}A × ${fmt(price)} د.ع = <b>${fmt(Math.round(monthly))}</b> د.ع/شهر</div>
+    <div>× ${months} شهر = <b>${fmt(Math.round(subtotal))}</b> د.ع</div>
+    ${extra > 0 ? `<div>+ رسوم إضافية = <b>${fmt(extra)}</b> د.ع</div>` : ''}
+  `;
+}
+
+/* ============ MODAL ============ */
+function openModal(title, body){
+  if (mapInstance){ try { mapInstance.remove(); } catch(e){} mapInstance = null; }
+  $('modalRoot').innerHTML = `
+    <div class="modal-back" onclick="if(event.target===this)closeModal()">
+      <div class="modal">
+        <div class="modal-head">
+          <div class="modal-title">${title}</div>
+          <button class="modal-close" onclick="closeModal()">×</button>
+        </div>
+        ${body}
+      </div>
+    </div>`;
+}
+function closeModal(){
+  if (mapInstance){ try { mapInstance.remove(); } catch(e){} mapInstance = null; }
+  $('modalRoot').innerHTML = '';
+}
+
+/* ============ RENDER ALL ============ */
+function renderAll(){
+  const u = getSessionUser();
+  if (!u) return;
+  renderHome();
+  if (currentScreen === 'generators') renderGenerators();
+  if (currentScreen === 'subscribers') renderSubscribers();
+  if (currentScreen === 'calc') initCalcSelects();
+}
+
+/* ============ FLOW ============ */
+function showAuth(){
+  $('app').classList.add('hidden');
+  $('authScreen').classList.remove('hidden');
+  switchAuth('login');
+  if (mapInstance){ try { mapInstance.remove(); } catch(e){} mapInstance = null; }
+  $('modalRoot').innerHTML = '';
+}
+
+function enterApp(){
+  $('authScreen').classList.add('hidden');
+  $('app').classList.remove('hidden');
+  updateUserBtn();
+  renderNav();
+  renderHome();
+  goScreen('home');
+  seedIfEmpty();
+}
+
+function seedIfEmpty(){
+  const u = getSessionUser();
+  if (!u) return;
+  const seedKey = `ampere_seeded__${u.id}`;
+  const gens = getGenerators();
+  if (gens.length === 0 && !localStorage.getItem(seedKey)){
+    localStorage.setItem(seedKey, '1');
+    saveGenerators([{
+      id: uid(), name: 'مولد الحي التجاري', location: 'الكرادة',
+      capacity: 200, pricePerAmp: 12000, hours: 10, notes: 'يعمل من 6ص - 4م'
+    }]);
+    setTimeout(() => toast('👋 مرحباً بك في أمبير — أضف أول مولداتك', 'gold'), 400);
+  }
+}
+
+/* ============ INIT ============ */
+function init(){
+  setTimeout(() => {
+    $('splash').classList.add('done');
+    const u = getSessionUser();
+    if (u) enterApp();
+    else showAuth();
+  }, 3400);
+}
+
+init();
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === 'Enter'){
+    if (!$('authScreen').classList.contains('hidden')){
+      if (!$('authLogin').classList.contains('hidden')) doLogin();
+      else if (!$('authSignup').classList.contains('hidden')) doSignup();
+    }
+  }
+});
+</script>
+</body>
+</html>
